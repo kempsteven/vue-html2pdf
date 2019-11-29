@@ -35,7 +35,10 @@ const baseConfig = {
     },
     postVue: [
       buble({
-        transforms: { asyncAwait: false }
+        transforms: {
+          asyncAwait: false,
+          forOf: false
+        }
       }),
     ],
   },

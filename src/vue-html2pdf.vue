@@ -77,12 +77,9 @@ export default {
 					a class named 'html2pdf__page-break' and insert the element before the element
 					that will be in the next page
 				*/
-				ArrOfContentChildren.forEach((childElement, index) => {
+				for (const childElement of parentElement.children) {
 					// Get Element Height
 					const elementHeight = childElement.clientHeight
-
-					// Console.log here hehe
-					console.log(childElement)
 
 					// Get Computed Margin Top and Bottom
 					const elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement)
@@ -101,7 +98,7 @@ export default {
 						// Reset Variables made the upper condition false
 						childrenHeight = elementHeightWithMargin
 					}
-				})
+				}
 
 				this.progress = 70
 

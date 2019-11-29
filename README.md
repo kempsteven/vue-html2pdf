@@ -1,4 +1,4 @@
-# test-npm
+# VueHTML2PDF Documentation
 
 ## Project setup
 ```
