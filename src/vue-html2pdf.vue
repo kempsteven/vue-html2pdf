@@ -81,6 +81,8 @@ export default {
 					// Get Element Height
 					const elementHeight = childElement.clientHeight
 
+					console.log(childElement)
+
 					// Get Computed Margin Top and Bottom
 					const elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement)
 					const elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom)
