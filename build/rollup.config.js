@@ -34,7 +34,9 @@ const baseConfig = {
       },
     },
     postVue: [
-      buble(),
+      buble({
+        transforms: { asyncAwait: false }
+      }),
     ],
   },
 };
