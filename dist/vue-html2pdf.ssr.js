@@ -71,6 +71,9 @@ var script = {
 					// Get Element Height
 					var elementHeight = childElement.clientHeight;
 
+					// Console.log here hehe
+					console.log(childElement);
+
 					// Get Computed Margin Top and Bottom
 					var elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement);
 					var elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom);
@@ -282,13 +285,13 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-6619814b_0", { source: ".generate-img[data-v-6619814b]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.generate-img .btn[data-v-6619814b]{display:none}.generate-img.show-layout[data-v-6619814b]{left:0;z-index:9999}.generate-img.show-layout .btn[data-v-6619814b]{position:fixed;display:block;left:10px;top:10px;background:#657bdd;color:#fff;padding:15px 25px;border:0;border-radius:5px;cursor:pointer}", map: undefined, media: undefined });
+    inject("data-v-bb5eba88_0", { source: ".generate-img[data-v-bb5eba88]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.generate-img .btn[data-v-bb5eba88]{display:none}.generate-img.show-layout[data-v-bb5eba88]{left:0;z-index:9999}.generate-img.show-layout .btn[data-v-bb5eba88]{position:fixed;display:block;left:10px;top:10px;background:#657bdd;color:#fff;padding:15px 25px;border:0;border-radius:5px;cursor:pointer}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-6619814b";
+  var __vue_scope_id__ = "data-v-bb5eba88";
   /* module identifier */
-  var __vue_module_identifier__ = "data-v-6619814b";
+  var __vue_module_identifier__ = "data-v-bb5eba88";
   /* functional template */
   var __vue_is_functional_template__ = false;
   /* style inject shadow dom */

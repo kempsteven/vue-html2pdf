@@ -81,6 +81,7 @@ export default {
 					// Get Element Height
 					const elementHeight = childElement.clientHeight
 
+					// Console.log here hehe
 					console.log(childElement)
 
 					// Get Computed Margin Top and Bottom
