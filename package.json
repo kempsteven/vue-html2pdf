@@ -1,0 +1,37 @@
+{
+  "name": "vue-html2pdf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/vue-html2pdf.ssr.js",
+  "module": "dist/vue-html2pdf.esm.js",
+  "unpkg": "dist/vue-html2pdf.min.js",
+  "files": [
+    "dist/*",
+    "src/**/*.vue"
+  ],
+  "scripts": {
+    "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js",
+    "build:ssr": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs",
+    "build:es": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format es",
+    "build:unpkg": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife"
+  },
+  "dependencies": {
+    "html2pdf.js": "^0.9.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-alias": "^2.2.0",
+    "@rollup/plugin-buble": "^0.20.0",
+    "@rollup/plugin-replace": "^2.2.1",
+    "cross-env": "^6.0.3",
+    "minimist": "^1.2.0",
+    "rollup": "^1.26.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-vue": "5.1.1",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "engines": {
+    "node": ">=8"
+  }
+}
