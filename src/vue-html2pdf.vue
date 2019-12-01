@@ -166,12 +166,11 @@ export default {
 
 
 			if (this.previewInNewtab) {
-				await html2pdf().from(element).toPdf().get('pdf').then((pdf) => {
-					this.openInNewTab(pdf.output('bloburl'))
-				})
+				const pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl')
+				this.openInNewTab(pdfBlobUrl)
 			} else {
 				// Download PDF
-				await html2pdf().from(element).set(opt).save()
+				await html2pdf().set(opt).from(element).save()
 			}
 
 			this.progress = 100
