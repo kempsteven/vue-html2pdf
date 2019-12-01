@@ -1,5 +1,9 @@
 # VueHTML2PDF Documentation
 
+Demo Site: https://vue-html2pdf-demo.netlify.com/
+
+Documentation is under development! hehe
+
 ## Project setup
 ```
 npm install

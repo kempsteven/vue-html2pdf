@@ -19,6 +19,11 @@ export default {
 			default: false
 		},
 
+		previewInNewtab: {
+			type: Boolean,
+			default: false
+		},
+
 		splitElementsByHeight: {
 			type: Number,
 			default: 0,
@@ -159,12 +164,46 @@ export default {
 				}
 			}
 
-			// Download PDF
-			await html2pdf().from(element).set(opt).save()
+
+			if (this.previewInNewtab) {
+				await html2pdf().from(element).toPdf().get('pdf').then((pdf) => {
+					this.openInNewTab(pdf.output('bloburl'))
+				})
+			} else {
+				// Download PDF
+				await html2pdf().from(element).set(opt).save()
+			}
 
 			this.progress = 100
 
 			this.$emit('hasDownloaded')
+		},
+
+		openInNewTab (pdfBlobUrl) {
+			const pdfWindow = window.open('')
+
+			pdfWindow.document.write(`
+				<html
+					<head>
+						<title>
+							Vue HTML2PDF - PDF Preview
+						</title>
+
+						<style>
+							body{margin: 0px;}
+							iframe{border-width: 0px;}
+						</style>
+					</head>
+
+					<body>
+						<iframe
+							width='100%'
+							height='100%'
+							src='${ pdfBlobUrl }'
+						></iframe>
+					</body>
+				</html>
+			`)
 		}
 	}
 }
