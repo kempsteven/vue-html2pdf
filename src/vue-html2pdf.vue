@@ -69,8 +69,8 @@ export default {
 			const parentElement = this.$refs.pdfContent.firstChild
 			const pageBreaks = parentElement.getElementsByClassName('html2pdf__page-break')
 			const pageBreakLength = pageBreaks.length - 1
-
-			if (pageBreakLength === 0) return
+			
+			if (pageBreakLength === -1) return
 
 			this.hasAlreadyParsed = false
 
