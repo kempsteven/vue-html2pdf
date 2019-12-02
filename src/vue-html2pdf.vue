@@ -1,9 +1,10 @@
 <template>
-    <div class="generate-img" :class="{ 'show-layout' : showLayout }">
-		<button class="btn" @click="generatePdf()">
-			Download File
-		</button>
-
+    <div
+		class="generate-img"
+		:class="{
+			'show-layout' : showLayout
+		}"
+	>
 		<section class="content-wrapper" ref="pdfContent">
 			<slot name="pdf-content"/>
 		</section>
@@ -24,7 +25,7 @@ export default {
 			default: false
 		},
 
-		splitElementsByHeight: {
+		paginateElementsByHeight: {
 			type: Number,
 			default: 0,
 			required: true
@@ -48,26 +49,46 @@ export default {
 	data () {
 		return {
 			hasAlreadyParsed: false,
-			progress: 0
+			progress: 0,
+			pdfWindow: null
 		}
 	},
 
 	watch: {
 		progress (val) {
 			this.$emit('progress', val)
+		},
+
+		paginateElementsByHeight () {
+			this.resetPagination()
 		}
 	},
 
 	methods: {
+		resetPagination () {
+			const parentElement = this.$refs.pdfContent.firstChild
+			const pageBreaks = parentElement.getElementsByClassName('html2pdf__page-break')
+			const pageBreakLength = pageBreaks.length - 1
+
+			if (pageBreakLength === 0) return
+
+			this.hasAlreadyParsed = false
+
+			// Remove All Page Break (For Pagination)
+			for (let x = pageBreakLength; x >= 0; x--) {
+				pageBreaks[x].parentNode.removeChild(pageBreaks[x])
+			}
+		},
+
 		generatePdf () {
 			this.$emit('hasStartedDownload')
 
 			this.progress = 0
 			
-			this.addPageBreakBySplitElementsByHeight()
+			this.paginationOfElements()
 		},
 
-		addPageBreakBySplitElementsByHeight () {
+		paginationOfElements () {
 			this.progress = 25
 
 			if (!this.hasAlreadyParsed) {
@@ -78,7 +99,7 @@ export default {
 
 				/*
 					Loop through Elements and add there height with childrenHeight variable.
-					Once the childrenHeight is >= this.splitElementsByHeight, create a div with
+					Once the childrenHeight is >= this.paginateElementsByHeight, create a div with
 					a class named 'html2pdf__page-break' and insert the element before the element
 					that will be in the next page
 				*/
@@ -93,7 +114,7 @@ export default {
 					// Add Both Element Height with the Elements Margin Top and Bottom
 					const elementHeightWithMargin = elementHeight + elementMarginTopBottom
 
-					if ((childrenHeight + elementHeight) < this.splitElementsByHeight) {
+					if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
 						childrenHeight += elementHeightWithMargin
 					} else {
 						const section = document.createElement('div')
@@ -166,8 +187,11 @@ export default {
 
 
 			if (this.previewInNewtab) {
+				this.setNewTab()
+
 				const pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl')
-				this.openInNewTab(pdfBlobUrl)
+
+				this.setPdfInNewTab(pdfBlobUrl)
 			} else {
 				// Download PDF
 				await html2pdf().set(opt).from(element).save()
@@ -178,30 +202,102 @@ export default {
 			this.$emit('hasDownloaded')
 		},
 
-		openInNewTab (pdfBlobUrl) {
-			const pdfWindow = window.open('')
+		setNewTab () {
+			this.pdfWindow = window.open('', '_blank')
 
-			pdfWindow.document.write(`
-				<html
+			this.pdfWindow.document.write(`
+				<html>
 					<head>
 						<title>
 							Vue HTML2PDF - PDF Preview
 						</title>
 
 						<style>
-							body{margin: 0px;}
-							iframe{border-width: 0px;}
+							@keyframes animate-rotate {
+								0% {
+									transform: rotate(0deg);
+								}
+
+								50% {
+									transform: rotate(180deg);
+									opacity: .35;
+								}
+
+								100% {
+									transform: rotate(360deg);
+								}   
+							}
+
+							@keyframes appear {
+								0% {
+									opacity: 0;
+								}
+
+								100% {
+									opacity: 1;
+								}   
+							}
+
+							body {
+								margin: 0px;
+								display: flex;
+								justify-content: center;
+								align-items: center;
+								background: #555;
+								color: #fff;
+								overflow: hidden;
+								font-family: 'Avenir', Helvetica, Arial, sans-serif;
+							}
+
+							h3 {
+								margin: 0;
+								display: flex;
+								align-items: center;
+							}
+
+							h3 .loading {
+								border-radius: 50%;
+								width: 27px;
+								height: 27px;
+								border-top: 10px solid rgba(131, 220, 202,0.1);
+								border-right: 10px solid rgba(131, 220, 202,0.3);
+								border-bottom: 10px solid rgba(131, 220, 202,0.5);
+								border-left: 10px solid rgba(131, 220, 202,0.8);;
+								animation: animate-rotate infinite linear 1s;
+								margin-right: 15px;
+							}
+
+							iframe {
+								width: 100vw;
+								height: 100vh;
+								border: 0;
+								opacity: 0;
+								animation: appear 0.5s forwards 0.4s;
+							}
 						</style>
 					</head>
 
 					<body>
-						<iframe
-							width='100%'
-							height='100%'
-							src='${ pdfBlobUrl }'
-						></iframe>
+						<h3>
+							<div class="loading"></div>
+
+							Preview Loading ...
+						</h3>
 					</body>
 				</html>
+			`)
+		},
+
+		setPdfInNewTab (pdfBlobUrl) {
+			// Remove Loading Label
+			this.pdfWindow.document.getElementsByTagName("h3")[0].remove()
+
+			this.pdfWindow.document.write(`
+				<iframe
+					width='100%'
+					height='100%'
+					src='${ pdfBlobUrl }'
+				></iframe>
 			`)
 		}
 	}
@@ -222,26 +318,9 @@ export default {
 	align-items: flex-start;
 	overflow: auto;
 
-	.btn {
-		display: none;
-	}
-
 	&.show-layout {
 		left: 0vw;
 		z-index: 9999;
-
-		.btn {
-			position: fixed;
-			display: block;
-			left: 10px;
-			top: 10px;
-			background: #657bdd;
-			color: #fff;
-			padding: 15px 25px;
-			border: 0;
-			border-radius: 5px;
-			cursor: pointer;
-		}
 	}
 }
 </style>
