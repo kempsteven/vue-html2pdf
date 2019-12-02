@@ -94,4 +94,4 @@ This slot can seen in the Usage Part
 
 | Slot                     | Description                                                                                                         |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------|
-| pdf-content              | Use this slot to insert you component for element that will be converted to PDF                                     |
+| pdf-content              | Use this slot to insert you component or element that will be converted to PDF                                     |
