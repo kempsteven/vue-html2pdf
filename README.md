@@ -16,6 +16,7 @@ vue-html2pdf converts any vue component or element into PDF, vue-html2pdf is bas
 - [Usage](#usage)
 - [Props](#props)
 - [Events](#events)
+- [Slot](#slot)
 
 ## Getting started
 #### NPM
@@ -87,3 +88,10 @@ This events can seen in the Usage Part
 | progress                   | This will return the progress of the PDF Generation.                                                                |
 | hasStartedGeneration       | This only be triggered on start of the generation of the PDF.                                                       |
 | hasGenerated               | This will be triggered after the generation of the PDF.                                                             |
+
+## Slot
+This slot can seen in the Usage Part
+
+| Slot                     | Description                                                                                                         |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------|
+| pdf-content              | Use this slot to insert you component for element that will be converted to PDF                                     |
