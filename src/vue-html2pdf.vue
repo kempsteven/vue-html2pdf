@@ -39,10 +39,21 @@ export default {
 		pdfQuality: {
 			type: Number,
 			default: 2,
+			validator: value => value <= 2
 		},
 
 		pdfFormat: {
 			default: 'a4',
+			validator: value => {
+				const validPdfFormat = [
+					'a0', 'a1', 'a2', 'a3',
+					'a4', 'letter', 'legal',
+					'a5', 'a6', 'a7', 'a8',
+					'a9', 'a10'
+				]
+				
+				return validPdfFormat.indexOf(value) !== -1
+			}
 		}
 	},
 
@@ -80,8 +91,8 @@ export default {
 			}
 		},
 
-		generatePdf () {
-			this.$emit('hasStartedDownload')
+		async generatePdf () {
+			this.$emit('hasStartedGeneration')
 
 			this.progress = 0
 			
@@ -199,7 +210,7 @@ export default {
 
 			this.progress = 100
 
-			this.$emit('hasDownloaded')
+			this.$emit('hasGenerated')
 		},
 
 		setNewTab () {

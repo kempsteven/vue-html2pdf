@@ -28,10 +28,21 @@ var script = {
 		pdfQuality: {
 			type: Number,
 			default: 2,
+			validator: function (value) { return value <= 2; }
 		},
 
 		pdfFormat: {
 			default: 'a4',
+			validator: function (value) {
+				var validPdfFormat = [
+					'a0', 'a1', 'a2', 'a3',
+					'a4', 'letter', 'legal',
+					'a5', 'a6', 'a7', 'a8',
+					'a9', 'a10'
+				];
+				
+				return validPdfFormat.indexOf(value) !== -1
+			}
 		}
 	},
 
@@ -69,8 +80,8 @@ var script = {
 			}
 		},
 
-		generatePdf: function generatePdf () {
-			this.$emit('hasStartedDownload');
+		generatePdf: async function generatePdf () {
+			this.$emit('hasStartedGeneration');
 
 			this.progress = 0;
 			
@@ -190,7 +201,7 @@ var script = {
 
 			this.progress = 100;
 
-			this.$emit('hasDownloaded');
+			this.$emit('hasGenerated');
 		},
 
 		setNewTab: function setNewTab () {
@@ -348,11 +359,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-fc6fb1b0_0", { source: ".generate-img[data-v-fc6fb1b0]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.generate-img.show-layout[data-v-fc6fb1b0]{left:0;z-index:9999}", map: undefined, media: undefined });
+    inject("data-v-e7133674_0", { source: ".generate-img[data-v-e7133674]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.generate-img.show-layout[data-v-e7133674]{left:0;z-index:9999}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-fc6fb1b0";
+  var __vue_scope_id__ = "data-v-e7133674";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */
