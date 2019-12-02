@@ -9,7 +9,12 @@ var script = {
 			default: false
 		},
 
-		splitElementsByHeight: {
+		previewInNewtab: {
+			type: Boolean,
+			default: false
+		},
+
+		paginateElementsByHeight: {
 			type: Number,
 			default: 0,
 			required: true
@@ -33,26 +38,46 @@ var script = {
 	data: function data () {
 		return {
 			hasAlreadyParsed: false,
-			progress: 0
+			progress: 0,
+			pdfWindow: null
 		}
 	},
 
 	watch: {
 		progress: function progress (val) {
 			this.$emit('progress', val);
+		},
+
+		paginateElementsByHeight: function paginateElementsByHeight () {
+			this.resetPagination();
 		}
 	},
 
 	methods: {
+		resetPagination: function resetPagination () {
+			var parentElement = this.$refs.pdfContent.firstChild;
+			var pageBreaks = parentElement.getElementsByClassName('html2pdf__page-break');
+			var pageBreakLength = pageBreaks.length - 1;
+
+			if (pageBreakLength === 0) { return }
+
+			this.hasAlreadyParsed = false;
+
+			// Remove All Page Break (For Pagination)
+			for (var x = pageBreakLength; x >= 0; x--) {
+				pageBreaks[x].parentNode.removeChild(pageBreaks[x]);
+			}
+		},
+
 		generatePdf: function generatePdf () {
 			this.$emit('hasStartedDownload');
 
 			this.progress = 0;
 			
-			this.addPageBreakBySplitElementsByHeight();
+			this.paginationOfElements();
 		},
 
-		addPageBreakBySplitElementsByHeight: function addPageBreakBySplitElementsByHeight () {
+		paginationOfElements: function paginationOfElements () {
 			this.progress = 25;
 
 			if (!this.hasAlreadyParsed) {
@@ -63,7 +88,7 @@ var script = {
 
 				/*
 					Loop through Elements and add there height with childrenHeight variable.
-					Once the childrenHeight is >= this.splitElementsByHeight, create a div with
+					Once the childrenHeight is >= this.paginateElementsByHeight, create a div with
 					a class named 'html2pdf__page-break' and insert the element before the element
 					that will be in the next page
 				*/
@@ -78,7 +103,7 @@ var script = {
 					// Add Both Element Height with the Elements Margin Top and Bottom
 					var elementHeightWithMargin = elementHeight + elementMarginTopBottom;
 
-					if ((childrenHeight + elementHeight) < this.splitElementsByHeight) {
+					if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
 						childrenHeight += elementHeightWithMargin;
 					} else {
 						var section = document.createElement('div');
@@ -151,12 +176,34 @@ var script = {
 				}
 			};
 
-			// Download PDF
-			await html2pdf().from(element).set(opt).save();
+
+			if (this.previewInNewtab) {
+				this.setNewTab();
+
+				var pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl');
+
+				this.setPdfInNewTab(pdfBlobUrl);
+			} else {
+				// Download PDF
+				await html2pdf().set(opt).from(element).save();
+			}
 
 			this.progress = 100;
 
 			this.$emit('hasDownloaded');
+		},
+
+		setNewTab: function setNewTab () {
+			this.pdfWindow = window.open('', '_blank');
+
+			this.pdfWindow.document.write("\n\t\t\t\t<html>\n\t\t\t\t\t<head>\n\t\t\t\t\t\t<title>\n\t\t\t\t\t\t\tVue HTML2PDF - PDF Preview\n\t\t\t\t\t\t</title>\n\n\t\t\t\t\t\t<style>\n\t\t\t\t\t\t\t@keyframes animate-rotate {\n\t\t\t\t\t\t\t\t0% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(0deg);\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t50% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(180deg);\n\t\t\t\t\t\t\t\t\topacity: .35;\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(360deg);\n\t\t\t\t\t\t\t\t}   \n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t@keyframes appear {\n\t\t\t\t\t\t\t\t0% {\n\t\t\t\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\topacity: 1;\n\t\t\t\t\t\t\t\t}   \n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tbody {\n\t\t\t\t\t\t\t\tmargin: 0px;\n\t\t\t\t\t\t\t\tdisplay: flex;\n\t\t\t\t\t\t\t\tjustify-content: center;\n\t\t\t\t\t\t\t\talign-items: center;\n\t\t\t\t\t\t\t\tbackground: #555;\n\t\t\t\t\t\t\t\tcolor: #fff;\n\t\t\t\t\t\t\t\toverflow: hidden;\n\t\t\t\t\t\t\t\tfont-family: 'Avenir', Helvetica, Arial, sans-serif;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\th3 {\n\t\t\t\t\t\t\t\tmargin: 0;\n\t\t\t\t\t\t\t\tdisplay: flex;\n\t\t\t\t\t\t\t\talign-items: center;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\th3 .loading {\n\t\t\t\t\t\t\t\tborder-radius: 50%;\n\t\t\t\t\t\t\t\twidth: 27px;\n\t\t\t\t\t\t\t\theight: 27px;\n\t\t\t\t\t\t\t\tborder-top: 10px solid rgba(131, 220, 202,0.1);\n\t\t\t\t\t\t\t\tborder-right: 10px solid rgba(131, 220, 202,0.3);\n\t\t\t\t\t\t\t\tborder-bottom: 10px solid rgba(131, 220, 202,0.5);\n\t\t\t\t\t\t\t\tborder-left: 10px solid rgba(131, 220, 202,0.8);;\n\t\t\t\t\t\t\t\tanimation: animate-rotate infinite linear 1s;\n\t\t\t\t\t\t\t\tmargin-right: 15px;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tiframe {\n\t\t\t\t\t\t\t\twidth: 100vw;\n\t\t\t\t\t\t\t\theight: 100vh;\n\t\t\t\t\t\t\t\tborder: 0;\n\t\t\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t\t\t\tanimation: appear 0.5s forwards 0.4s;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t</style>\n\t\t\t\t\t</head>\n\n\t\t\t\t\t<body>\n\t\t\t\t\t\t<h3>\n\t\t\t\t\t\t\t<div class=\"loading\"></div>\n\n\t\t\t\t\t\t\tPreview Loading ...\n\t\t\t\t\t\t</h3>\n\t\t\t\t\t</body>\n\t\t\t\t</html>\n\t\t\t");
+		},
+
+		setPdfInNewTab: function setPdfInNewTab (pdfBlobUrl) {
+			// Remove Loading Label
+			this.pdfWindow.document.getElementsByTagName("h3")[0].remove();
+
+			this.pdfWindow.document.write(("\n\t\t\t\t<iframe\n\t\t\t\t\twidth='100%'\n\t\t\t\t\theight='100%'\n\t\t\t\t\tsrc='" + pdfBlobUrl + "'\n\t\t\t\t></iframe>\n\t\t\t"));
 		}
 	}
 };
@@ -293,17 +340,19 @@ function addStyle(id, css) {
 var __vue_script__ = script;
 
 /* template */
-var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"generate-img",class:{ 'show-layout' : _vm.showLayout }},[_c('button',{staticClass:"btn",on:{"click":function($event){return _vm.generatePdf()}}},[_vm._v("\n\t\t\tDownload File\n\t\t")]),_vm._v(" "),_c('section',{ref:"pdfContent",staticClass:"content-wrapper"},[_vm._t("pdf-content")],2)])};
+var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"generate-img",class:{
+			'show-layout' : _vm.showLayout
+		}},[_c('section',{ref:"pdfContent",staticClass:"content-wrapper"},[_vm._t("pdf-content")],2)])};
 var __vue_staticRenderFns__ = [];
 
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-32735df0_0", { source: ".generate-img[data-v-32735df0]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.generate-img .btn[data-v-32735df0]{display:none}.generate-img.show-layout[data-v-32735df0]{left:0;z-index:9999}.generate-img.show-layout .btn[data-v-32735df0]{position:fixed;display:block;left:10px;top:10px;background:#657bdd;color:#fff;padding:15px 25px;border:0;border-radius:5px;cursor:pointer}", map: undefined, media: undefined });
+    inject("data-v-68a2b901_0", { source: ".generate-img[data-v-68a2b901]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.generate-img.show-layout[data-v-68a2b901]{left:0;z-index:9999}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-32735df0";
+  var __vue_scope_id__ = "data-v-68a2b901";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */
