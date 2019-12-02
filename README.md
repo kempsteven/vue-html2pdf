@@ -1,10 +1,12 @@
 # VueHTML2PDF Documentation
 
+Package Github: https://github.com/kempsteven/vue-html2pdf
+
+Please see the demo site and demo github for easier understanding of the usage of the package.
 Demo Site: https://vue-html2pdf-demo.netlify.com/
 
 Demo Github: https://github.com/kempsteven/vue-html2pdf-demo
 
-Package Github: https://github.com/kempsteven/vue-html2pdf
 
 # vue-html2pdf
 
