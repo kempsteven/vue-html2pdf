@@ -1,13 +1,29 @@
 <template>
-    <div
-		class="generate-img"
-		:class="{
-			'show-layout' : showLayout
-		}"
-	>
-		<section class="content-wrapper" ref="pdfContent">
-			<slot name="pdf-content"/>
+    <div class="vue-html2pdf">
+		<section
+			class="layout-container"
+			:class="{
+				'show-layout' : showLayout
+			}"
+		>
+			<section class="content-wrapper" ref="pdfContent">
+				<slot name="pdf-content"/>
+			</section>
 		</section>
+
+		<transition name="transition-anim">
+			<section class="pdf-preview" v-if="pdfFile">
+				<button @click.self="closePreview()">
+					&times;
+				</button>
+
+				<iframe
+					:src="pdfFile"
+					width="100%"
+					height="100%"
+				/>
+			</section>
+		</transition>
     </div>
 </template>
 <script>
@@ -20,7 +36,7 @@ export default {
 			default: false
 		},
 
-		previewInNewtab: {
+		previewModal: {
 			type: Boolean,
 			default: false
 		},
@@ -39,21 +55,10 @@ export default {
 		pdfQuality: {
 			type: Number,
 			default: 2,
-			validator: value => value <= 2
 		},
 
 		pdfFormat: {
 			default: 'a4',
-			validator: value => {
-				const validPdfFormat = [
-					'a0', 'a1', 'a2', 'a3',
-					'a4', 'letter', 'legal',
-					'a5', 'a6', 'a7', 'a8',
-					'a9', 'a10'
-				]
-				
-				return validPdfFormat.indexOf(value) !== -1
-			}
 		}
 	},
 
@@ -61,7 +66,8 @@ export default {
 		return {
 			hasAlreadyParsed: false,
 			progress: 0,
-			pdfWindow: null
+			pdfWindow: null,
+			pdfFile: null
 		}
 	},
 
@@ -91,8 +97,8 @@ export default {
 			}
 		},
 
-		async generatePdf () {
-			this.$emit('hasStartedGeneration')
+		generatePdf () {
+			this.$emit('hasStartedDownload')
 
 			this.progress = 0
 			
@@ -174,6 +180,7 @@ export default {
 		async downloadPdf () {
 			// Set Element and Html2pdf.js Options
 			const element = this.$refs.pdfContent
+			
 
 			const opt = {
 				margin: 0,
@@ -196,142 +203,94 @@ export default {
 				}
 			}
 
+			let pdfBlobUrl
+			if (this.previewModal) {
 
-			if (this.previewInNewtab) {
-				this.setNewTab()
+				pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl')
+				this.pdfFile = pdfBlobUrl
 
-				const pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl')
-
-				this.setPdfInNewTab(pdfBlobUrl)
 			} else {
 				// Download PDF
-				await html2pdf().set(opt).from(element).save()
+				pdfBlobUrl = await html2pdf().set(opt).from(element).save().output('bloburl')
 			}
+
+			const res = await fetch(pdfBlobUrl)
+			const blobFile = await res.blob()
 
 			this.progress = 100
 
-			this.$emit('hasGenerated')
+			this.$emit('hasGenerated', blobFile)
 		},
 
-		setNewTab () {
-			this.pdfWindow = window.open('', '_blank')
-
-			this.pdfWindow.document.write(`
-				<html>
-					<head>
-						<title>
-							Vue HTML2PDF - PDF Preview
-						</title>
-
-						<style>
-							@keyframes animate-rotate {
-								0% {
-									transform: rotate(0deg);
-								}
-
-								50% {
-									transform: rotate(180deg);
-									opacity: .35;
-								}
-
-								100% {
-									transform: rotate(360deg);
-								}   
-							}
-
-							@keyframes appear {
-								0% {
-									opacity: 0;
-								}
-
-								100% {
-									opacity: 1;
-								}   
-							}
-
-							body {
-								margin: 0px;
-								display: flex;
-								justify-content: center;
-								align-items: center;
-								background: #555;
-								color: #fff;
-								overflow: hidden;
-								font-family: 'Avenir', Helvetica, Arial, sans-serif;
-							}
-
-							h3 {
-								margin: 0;
-								display: flex;
-								align-items: center;
-							}
-
-							h3 .loading {
-								border-radius: 50%;
-								width: 27px;
-								height: 27px;
-								border-top: 10px solid rgba(131, 220, 202,0.1);
-								border-right: 10px solid rgba(131, 220, 202,0.3);
-								border-bottom: 10px solid rgba(131, 220, 202,0.5);
-								border-left: 10px solid rgba(131, 220, 202,0.8);;
-								animation: animate-rotate infinite linear 1s;
-								margin-right: 15px;
-							}
-
-							iframe {
-								width: 100vw;
-								height: 100vh;
-								border: 0;
-								opacity: 0;
-								animation: appear 0.5s forwards 0.4s;
-							}
-						</style>
-					</head>
-
-					<body>
-						<h3>
-							<div class="loading"></div>
-
-							Preview Loading ...
-						</h3>
-					</body>
-				</html>
-			`)
-		},
-
-		setPdfInNewTab (pdfBlobUrl) {
-			// Remove Loading Label
-			this.pdfWindow.document.getElementsByTagName("h3")[0].remove()
-
-			this.pdfWindow.document.write(`
-				<iframe
-					width='100%'
-					height='100%'
-					src='${ pdfBlobUrl }'
-				></iframe>
-			`)
+		closePreview () {
+			this.pdfFile = null
 		}
 	}
 }
 </script>
 
 <style lang="scss" scoped>
-.generate-img {
-	position: fixed;
-	width: 100vw;
-	height: 100vh;
-	left: -100vw;
-	top: 0;
-	z-index: -9999;
-	background: rgba(95, 95, 95, 0.8);
-	display: flex;
-	justify-content: center;
-	align-items: flex-start;
-	overflow: auto;
+.vue-html2pdf {
+	.layout-container {
+		position: fixed;
+		width: 100vw;
+		height: 100vh;
+		left: -100vw;
+		top: 0;
+		z-index: -9999;
+		background: rgba(95, 95, 95, 0.8);
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		overflow: auto;
 
-	&.show-layout {
-		left: 0vw;
-		z-index: 9999;
+		&.show-layout {
+			left: 0vw;
+			z-index: 9999;
+		}
+	}
+
+	.pdf-preview {
+		position: fixed;
+		width: 65%;
+		min-width: 600px;
+		height: 80vh;
+		top: 100px;
+		z-index: 9999999;
+		left: 50%;
+		transform: translateX(-50%);
+		border-radius: 5px;
+		box-shadow: 0px 0px 10px #00000048;
+
+		button {
+			position: absolute;
+			top: -20px;
+			left: -15px;
+			width: 35px;
+			height: 35px;
+			background: #555;
+			border: 0;
+			box-shadow: 0px 0px 10px #00000048;
+			border-radius: 50%;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 20px;
+			cursor: pointer;
+		}
+
+		iframe {
+			border: 0;
+		}
+	}
+
+	.transition-anim-enter-active, .transition-anim-leave-active {
+		transition: opacity 0.3s ease-in;
+	}
+
+	.transition-anim-enter, .transition-anim-leave-to{
+		opacity: 0;
 	}
 }
 </style>

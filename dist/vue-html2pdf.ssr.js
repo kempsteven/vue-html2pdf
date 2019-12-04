@@ -7,7 +7,7 @@ var script = {
 			default: false
 		},
 
-		previewInNewtab: {
+		previewModal: {
 			type: Boolean,
 			default: false
 		},
@@ -26,21 +26,10 @@ var script = {
 		pdfQuality: {
 			type: Number,
 			default: 2,
-			validator: function (value) { return value <= 2; }
 		},
 
 		pdfFormat: {
 			default: 'a4',
-			validator: function (value) {
-				var validPdfFormat = [
-					'a0', 'a1', 'a2', 'a3',
-					'a4', 'letter', 'legal',
-					'a5', 'a6', 'a7', 'a8',
-					'a9', 'a10'
-				];
-				
-				return validPdfFormat.indexOf(value) !== -1
-			}
 		}
 	},
 
@@ -48,7 +37,8 @@ var script = {
 		return {
 			hasAlreadyParsed: false,
 			progress: 0,
-			pdfWindow: null
+			pdfWindow: null,
+			pdfFile: null
 		}
 	},
 
@@ -78,8 +68,8 @@ var script = {
 			}
 		},
 
-		generatePdf: async function generatePdf () {
-			this.$emit('hasStartedGeneration');
+		generatePdf: function generatePdf () {
+			this.$emit('hasStartedDownload');
 
 			this.progress = 0;
 			
@@ -163,6 +153,7 @@ var script = {
 		downloadPdf: async function downloadPdf () {
 			// Set Element and Html2pdf.js Options
 			var element = this.$refs.pdfContent;
+			
 
 			var opt = {
 				margin: 0,
@@ -185,34 +176,27 @@ var script = {
 				}
 			};
 
+			var pdfBlobUrl;
+			if (this.previewModal) {
 
-			if (this.previewInNewtab) {
-				this.setNewTab();
+				pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl');
+				this.pdfFile = pdfBlobUrl;
 
-				var pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl');
-
-				this.setPdfInNewTab(pdfBlobUrl);
 			} else {
 				// Download PDF
-				await html2pdf().set(opt).from(element).save();
+				pdfBlobUrl = await html2pdf().set(opt).from(element).save().output('bloburl');
 			}
+
+			var res = await fetch(pdfBlobUrl);
+			var blobFile = await res.blob();
 
 			this.progress = 100;
 
-			this.$emit('hasGenerated');
+			this.$emit('hasGenerated', blobFile);
 		},
 
-		setNewTab: function setNewTab () {
-			this.pdfWindow = window.open('', '_blank');
-
-			this.pdfWindow.document.write("\n\t\t\t\t<html>\n\t\t\t\t\t<head>\n\t\t\t\t\t\t<title>\n\t\t\t\t\t\t\tVue HTML2PDF - PDF Preview\n\t\t\t\t\t\t</title>\n\n\t\t\t\t\t\t<style>\n\t\t\t\t\t\t\t@keyframes animate-rotate {\n\t\t\t\t\t\t\t\t0% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(0deg);\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t50% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(180deg);\n\t\t\t\t\t\t\t\t\topacity: .35;\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(360deg);\n\t\t\t\t\t\t\t\t}   \n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t@keyframes appear {\n\t\t\t\t\t\t\t\t0% {\n\t\t\t\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\topacity: 1;\n\t\t\t\t\t\t\t\t}   \n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tbody {\n\t\t\t\t\t\t\t\tmargin: 0px;\n\t\t\t\t\t\t\t\tdisplay: flex;\n\t\t\t\t\t\t\t\tjustify-content: center;\n\t\t\t\t\t\t\t\talign-items: center;\n\t\t\t\t\t\t\t\tbackground: #555;\n\t\t\t\t\t\t\t\tcolor: #fff;\n\t\t\t\t\t\t\t\toverflow: hidden;\n\t\t\t\t\t\t\t\tfont-family: 'Avenir', Helvetica, Arial, sans-serif;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\th3 {\n\t\t\t\t\t\t\t\tmargin: 0;\n\t\t\t\t\t\t\t\tdisplay: flex;\n\t\t\t\t\t\t\t\talign-items: center;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\th3 .loading {\n\t\t\t\t\t\t\t\tborder-radius: 50%;\n\t\t\t\t\t\t\t\twidth: 27px;\n\t\t\t\t\t\t\t\theight: 27px;\n\t\t\t\t\t\t\t\tborder-top: 10px solid rgba(131, 220, 202,0.1);\n\t\t\t\t\t\t\t\tborder-right: 10px solid rgba(131, 220, 202,0.3);\n\t\t\t\t\t\t\t\tborder-bottom: 10px solid rgba(131, 220, 202,0.5);\n\t\t\t\t\t\t\t\tborder-left: 10px solid rgba(131, 220, 202,0.8);;\n\t\t\t\t\t\t\t\tanimation: animate-rotate infinite linear 1s;\n\t\t\t\t\t\t\t\tmargin-right: 15px;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tiframe {\n\t\t\t\t\t\t\t\twidth: 100vw;\n\t\t\t\t\t\t\t\theight: 100vh;\n\t\t\t\t\t\t\t\tborder: 0;\n\t\t\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t\t\t\tanimation: appear 0.5s forwards 0.4s;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t</style>\n\t\t\t\t\t</head>\n\n\t\t\t\t\t<body>\n\t\t\t\t\t\t<h3>\n\t\t\t\t\t\t\t<div class=\"loading\"></div>\n\n\t\t\t\t\t\t\tPreview Loading ...\n\t\t\t\t\t\t</h3>\n\t\t\t\t\t</body>\n\t\t\t\t</html>\n\t\t\t");
-		},
-
-		setPdfInNewTab: function setPdfInNewTab (pdfBlobUrl) {
-			// Remove Loading Label
-			this.pdfWindow.document.getElementsByTagName("h3")[0].remove();
-
-			this.pdfWindow.document.write(("\n\t\t\t\t<iframe\n\t\t\t\t\twidth='100%'\n\t\t\t\t\theight='100%'\n\t\t\t\t\tsrc='" + pdfBlobUrl + "'\n\t\t\t\t></iframe>\n\t\t\t"));
+		closePreview: function closePreview () {
+			this.pdfFile = null;
 		}
 	}
 };function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier /* server only */, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
@@ -332,21 +316,21 @@ function renderStyles(styles) {
 var __vue_script__ = script;
 
 /* template */
-var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"generate-img",class:{
-			'show-layout' : _vm.showLayout
-		}},[_vm._ssrNode("<section class=\"content-wrapper\">","</section>",[_vm._t("pdf-content")],2)])};
+var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"vue-html2pdf"},[_vm._ssrNode("<section"+(_vm._ssrClass("layout-container",{
+				'show-layout' : _vm.showLayout
+			}))+">","</section>",[_vm._ssrNode("<section class=\"content-wrapper\">","</section>",[_vm._t("pdf-content")],2)]),_vm._ssrNode(" "),_c('transition',{attrs:{"name":"transition-anim"}},[(_vm.pdfFile)?_c('section',{staticClass:"pdf-preview"},[_c('button',{on:{"click":function($event){if($event.target !== $event.currentTarget){ return null; }return _vm.closePreview()}}},[_vm._v("\n\t\t\t\t\t×\n\t\t\t\t")]),_vm._v(" "),_c('iframe',{attrs:{"src":_vm.pdfFile,"width":"100%","height":"100%"}})]):_vm._e()])],2)};
 var __vue_staticRenderFns__ = [];
 
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-e7133674_0", { source: ".generate-img[data-v-e7133674]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.generate-img.show-layout[data-v-e7133674]{left:0;z-index:9999}", map: undefined, media: undefined });
+    inject("data-v-b9efcbae_0", { source: ".vue-html2pdf .layout-container[data-v-b9efcbae]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.vue-html2pdf .layout-container.show-layout[data-v-b9efcbae]{left:0;z-index:9999}.vue-html2pdf .pdf-preview[data-v-b9efcbae]{position:fixed;width:65%;min-width:600px;height:80vh;top:100px;z-index:9999999;left:50%;transform:translateX(-50%);border-radius:5px;box-shadow:0 0 10px #00000048}.vue-html2pdf .pdf-preview button[data-v-b9efcbae]{position:absolute;top:-20px;left:-15px;width:35px;height:35px;background:#555;border:0;box-shadow:0 0 10px #00000048;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.vue-html2pdf .pdf-preview iframe[data-v-b9efcbae]{border:0}.vue-html2pdf .transition-anim-enter-active[data-v-b9efcbae],.vue-html2pdf .transition-anim-leave-active[data-v-b9efcbae]{transition:opacity .3s ease-in}.vue-html2pdf .transition-anim-enter[data-v-b9efcbae],.vue-html2pdf .transition-anim-leave-to[data-v-b9efcbae]{opacity:0}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-e7133674";
+  var __vue_scope_id__ = "data-v-b9efcbae";
   /* module identifier */
-  var __vue_module_identifier__ = "data-v-e7133674";
+  var __vue_module_identifier__ = "data-v-b9efcbae";
   /* functional template */
   var __vue_is_functional_template__ = false;
   /* style inject shadow dom */

@@ -19,6 +19,7 @@ vue-html2pdf converts any vue component or element into PDF, vue-html2pdf is bas
 - [Props](#props)
 - [Events](#events)
 - [Slot](#slot)
+- [Guide](#guide)
 
 ## Getting started
 #### NPM
@@ -51,19 +52,19 @@ To use it in the template
 <template>
    <div>
      <vue-html2pdf
-        :show-layout="false"
-        :preview-in-newtab="false"
-        :paginate-elements-by-height="1400"
-        :filename="'heehee'"
-        :pdf-quality="2"
-        :pdf-format="'a4'"
+        :show-layout="controlValue.showLayout"
+        :preview-modal="controlValue.previewModal"
+        :paginate-elements-by-height="controlValue.paginateElementsByHeight"
+        :filename="controlValue.filename"
+        :pdf-quality="controlValue.pdfQuality"
+        :pdf-format="controlValue.pdfFormat"
         @progress="onProgress($event)"
         @hasStartedGeneration="hasStartedGeneration()"
-        @hasGenerated="hasGenerated()"
+        @hasGenerated="hasGenerated($event)"
         ref="html2Pdf"
     >
         <section slot="pdf-content">
-            <!-- PDF Contents Here -->
+            <!-- PDF Content Here -->
         </section>
     </vue-html2pdf>
    </div>
@@ -76,7 +77,7 @@ This props can seen in the Usage Part
 | Props                       | Options                  | Description                                                                                                         |
 |-----------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------------|
 | show-layout                 | true, false              | Shows the pdf-content slot, using this you can see what contents will be converted to PDF.                          |
-| preview-in-newtab           | true, false              | Once you generate the pdf, a new tab will be created and the pdf will be previewed, PDF the will not be downloaded. |
+| preview-modal               | true, false              | Once you generate the pdf, PDF will be previewed on a modal, PDF will not be downloaded.                            |
 | paginate-elements-by-height | Any Number               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
 | filename                    | Any String               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
 | pdf-quality                 | 0 - 2 (Can have decimal) | 2 is the highest quality and 0.1 is the lowest quality, 0 will make the PDF disappear.                              |
@@ -85,15 +86,59 @@ This props can seen in the Usage Part
 ## Events
 This events can seen in the Usage Part
 
-| Events                     | Description                                                                                                         |
-|----------------------------|---------------------------------------------------------------------------------------------------------------------|
-| progress                   | This will return the progress of the PDF Generation.                                                                |
-| hasStartedGeneration       | This only be triggered on start of the generation of the PDF.                                                       |
-| hasGenerated               | This will be triggered after the generation of the PDF.                                                             |
+| Events                     | Description                                                                                                            |
+|----------------------------|------------------------------------------------------------------------------------------------------------------------|
+| progress                   | This will return the progress of the PDF Generation.                                                                   |
+| hasStartedGeneration       | This only be triggered on start of the generation of the PDF.                                                          |
+| hasGenerated               | This will be triggered after the generation of the PDF, will emit a Blob File of the PDF, can be retrived using $event.|
 
 ## Slot
 This slot can seen in the Usage Part
 
 | Slot                     | Description                                                                                                         |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------|
-| pdf-content              | Use this slot to insert you component or element that will be converted to PDF                                     |
+| pdf-content              | Use this slot to insert you component or element that will be converted to PDF                                      |
+
+## Guide
+The recommended format for the pdf-content
+
+```html
+    <section slot="pdf-content">
+        <!--
+            Divide your content into section, this pdf-item will
+            be the element that it's content will not be separated
+            in the paginating process. ex. <h4> and <span> wont be separated.
+        -->
+        <section class="pdf-item">
+            <h4>
+                Title
+            </h4>
+
+            <span>
+                Value
+            </span>
+        </section>
+
+        <!--
+            All other pdf-item will could be separated, pagination process,
+            depending on paginate-elements-by-height prop.
+        -->
+        <section class="pdf-item">
+            <h4>
+                Title
+            </h4>
+
+            <span>
+                Value
+            </span>
+        </section>
+
+        <!--
+            Any image with a remote link will not be converted to PDF,
+            the remote image should be downloaded locally first, before generation.
+        -->
+        <section class="pdf-item">
+            <img :src="remoteImageLink">
+        </section>
+    </section>
+```
