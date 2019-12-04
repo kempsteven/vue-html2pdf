@@ -48,7 +48,7 @@ export default {
 ```
 
 To use it in the template
-```vue
+```html
 <template>
    <div>
      <vue-html2pdf
@@ -103,42 +103,42 @@ This slot can seen in the Usage Part
 The recommended format for the pdf-content
 
 ```html
-    <section slot="pdf-content">
-        <!--
-            Divide your content into section, this pdf-item will
-            be the element that it's content will not be separated
-            in the paginating process. ex. <h4> and <span> wont be separated.
-        -->
-        <section class="pdf-item">
-            <h4>
-                Title
-            </h4>
+<section slot="pdf-content">
+    <!--
+        Divide your content into section, this pdf-item will
+        be the element that it's content will not be separated
+        in the paginating process. ex. <h4> and <span> wont be separated.
+    -->
+    <section class="pdf-item">
+        <h4>
+            Title
+        </h4>
 
-            <span>
-                Value
-            </span>
-        </section>
-
-        <!--
-            All other pdf-item will could be separated, pagination process,
-            depending on paginate-elements-by-height prop.
-        -->
-        <section class="pdf-item">
-            <h4>
-                Title
-            </h4>
-
-            <span>
-                Value
-            </span>
-        </section>
-
-        <!--
-            Any image with a remote link will not be converted to PDF,
-            the remote image should be downloaded locally first, before generation.
-        -->
-        <section class="pdf-item">
-            <img :src="remoteImageLink">
-        </section>
+        <span>
+            Value
+        </span>
     </section>
+
+    <!--
+        All other pdf-item will could be separated, pagination process,
+        depending on paginate-elements-by-height prop.
+    -->
+    <section class="pdf-item">
+        <h4>
+            Title
+        </h4>
+
+        <span>
+            Value
+        </span>
+    </section>
+
+    <!--
+        Any image with a remote link will not be converted to PDF,
+        the remote image should be downloaded locally first, before generation.
+    -->
+    <section class="pdf-item">
+        <img :src="remoteImageLink">
+    </section>
+</section>
 ```
