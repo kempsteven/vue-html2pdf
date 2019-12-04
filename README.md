@@ -20,11 +20,13 @@ vue-html2pdf converts any vue component or element into PDF, vue-html2pdf is bas
 - [Events](#events)
 - [Slot](#slot)
 - [Guide](#guide)
+- [Browser](#browser)
 
 ## Getting started
 #### NPM
 
 Install vue-html2pdf and its dependencies using NPM with `npm i vue-html2pdf`
+
 
 ## Usage
 ```js
@@ -71,6 +73,7 @@ To use it in the template
 </template>
 ```
 
+
 ## Props
 This props can seen in the Usage Part
 
@@ -83,6 +86,7 @@ This props can seen in the Usage Part
 | pdf-quality                 | 0 - 2 (Can have decimal) | 2 is the highest quality and 0.1 is the lowest quality, 0 will make the PDF disappear.                              |
 | pdf-format                  | a0, a1, a2, a3, a4, letter, legal, a5, a6, a7, a8, a9, a10 | This are the PDF formats (Paper Sizes)                                            |
 
+
 ## Events
 This events can seen in the Usage Part
 
@@ -92,12 +96,14 @@ This events can seen in the Usage Part
 | hasStartedGeneration       | This only be triggered on start of the generation of the PDF.                                                          |
 | hasGenerated               | This will be triggered after the generation of the PDF, will emit a Blob File of the PDF, can be retrived using $event.|
 
+
 ## Slot
 This slot can seen in the Usage Part
 
 | Slot                     | Description                                                                                                         |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------|
 | pdf-content              | Use this slot to insert you component or element that will be converted to PDF                                      |
+
 
 ## Guide
 The recommended format for the pdf-content
@@ -142,3 +148,10 @@ The recommended format for the pdf-content
     </section>
 </section>
 ```
+
+## Browser
+Package has been tested in these browsers:
+
+Chrome Version 78.0.3904.108
+Mozilla Firefox Version 70.0.1
+Microsoft Edge Version 44.17763.1.0
