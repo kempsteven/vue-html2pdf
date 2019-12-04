@@ -120,7 +120,7 @@ The recommended format for the pdf-content
     </section>
 
     <!--
-        All other pdf-item will could be separated, pagination process,
+        All other pdf-item will could be separated in pagination process,
         depending on paginate-elements-by-height prop.
     -->
     <section class="pdf-item">
