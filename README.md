@@ -153,5 +153,7 @@ The recommended format for the pdf-content
 Package has been tested in these browsers:
 
 Chrome Version 78.0.3904.108
+
 Mozilla Firefox Version 70.0.1
+
 Microsoft Edge Version 44.17763.1.0
