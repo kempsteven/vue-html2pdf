@@ -54,12 +54,15 @@ To use it in the template
 <template>
    <div>
      <vue-html2pdf
-        :show-layout="controlValue.showLayout"
-        :preview-modal="controlValue.previewModal"
-        :paginate-elements-by-height="controlValue.paginateElementsByHeight"
-        :filename="controlValue.filename"
-        :pdf-quality="controlValue.pdfQuality"
-        :pdf-format="controlValue.pdfFormat"
+        :show-layout="false"
+        :preview-modal="true"
+        :paginate-elements-by-height="1400"
+        filename="hee hee"
+        :pdf-quality="2"
+        pdf-format="a4"
+        pdf-orientation="landscape"
+        pdf-content-width="800px"
+
         @progress="onProgress($event)"
         @hasStartedGeneration="hasStartedGeneration()"
         @hasGenerated="hasGenerated($event)"
@@ -85,6 +88,8 @@ This props can seen in the Usage Part
 | filename                    | Any String               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
 | pdf-quality                 | 0 - 2 (Can have decimal) | 2 is the highest quality and 0.1 is the lowest quality, 0 will make the PDF disappear.                              |
 | pdf-format                  | a0, a1, a2, a3, a4, letter, legal, a5, a6, a7, a8, a9, a10 | This are the PDF formats (Paper Sizes)                                            |
+| pdf-orientation             | portrait, landscape      | This are the PDF orientation                                                                                        |
+| pdf-content-width           | Any css sizes (e.g. "800px", "65vw", "70%") | This is the PDF's content width                                                                  |
 
 
 ## Events
