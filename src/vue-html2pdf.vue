@@ -123,8 +123,7 @@ export default {
 
 			if (!this.hasAlreadyParsed) {
 				const parentElement = this.$refs.pdfContent.firstChild
-				const ArrOfContentChildren = [...parentElement.children]
-
+				const ArrOfContentChildren = Array.from(parentElement.children)
 				let childrenHeight = 0
 
 				/*
@@ -133,7 +132,7 @@ export default {
 					a class named 'html2pdf__page-break' and insert the element before the element
 					that will be in the next page
 				*/
-				for (const childElement of parentElement.children) {
+				for (const childElement of ArrOfContentChildren) {
 					// Get Element Height
 					const elementHeight = childElement.clientHeight
 
