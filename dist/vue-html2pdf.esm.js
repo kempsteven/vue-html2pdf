@@ -9,6 +9,11 @@ var script = {
 			default: false
 		},
 
+		enableDownload: {
+			type: Boolean,
+			default: true
+		},
+
 		previewModal: {
 			type: Boolean,
 			default: false
@@ -186,15 +191,13 @@ var script = {
 				}
 			};
 
-			var pdfBlobUrl;
+			var pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl');
+
 			if (this.previewModal) {
-				// this.setNewTab()
-
-				pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl');
 				this.pdfFile = pdfBlobUrl;
+			}
 
-			} else {
-				// Download PDF
+			if (this.enableDownload) {
 				pdfBlobUrl = await html2pdf().set(opt).from(element).save().output('bloburl');
 			}
 
@@ -204,19 +207,6 @@ var script = {
 			this.progress = 100;
 
 			this.$emit('hasGenerated', blobFile);
-		},
-
-		setNewTab: function setNewTab () {
-			this.pdfWindow = window.open('', '_blank');
-
-			this.pdfWindow.document.write("\n\t\t\t\t<html>\n\t\t\t\t\t<head>\n\t\t\t\t\t\t<title>\n\t\t\t\t\t\t\tVue HTML2PDF - PDF Preview\n\t\t\t\t\t\t</title>\n\n\t\t\t\t\t\t<style>\n\t\t\t\t\t\t\t@keyframes animate-rotate {\n\t\t\t\t\t\t\t\t0% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(0deg);\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t50% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(180deg);\n\t\t\t\t\t\t\t\t\topacity: .35;\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(360deg);\n\t\t\t\t\t\t\t\t}   \n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t@keyframes appear {\n\t\t\t\t\t\t\t\t0% {\n\t\t\t\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\topacity: 1;\n\t\t\t\t\t\t\t\t}   \n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tbody {\n\t\t\t\t\t\t\t\tmargin: 0px;\n\t\t\t\t\t\t\t\tdisplay: flex;\n\t\t\t\t\t\t\t\tjustify-content: center;\n\t\t\t\t\t\t\t\talign-items: center;\n\t\t\t\t\t\t\t\tbackground: #555;\n\t\t\t\t\t\t\t\tcolor: #fff;\n\t\t\t\t\t\t\t\toverflow: hidden;\n\t\t\t\t\t\t\t\tfont-family: 'Avenir', Helvetica, Arial, sans-serif;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\th3 {\n\t\t\t\t\t\t\t\tmargin: 0;\n\t\t\t\t\t\t\t\tdisplay: flex;\n\t\t\t\t\t\t\t\talign-items: center;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\th3 .loading {\n\t\t\t\t\t\t\t\tborder-radius: 50%;\n\t\t\t\t\t\t\t\twidth: 27px;\n\t\t\t\t\t\t\t\theight: 27px;\n\t\t\t\t\t\t\t\tborder-top: 10px solid rgba(131, 220, 202,0.1);\n\t\t\t\t\t\t\t\tborder-right: 10px solid rgba(131, 220, 202,0.3);\n\t\t\t\t\t\t\t\tborder-bottom: 10px solid rgba(131, 220, 202,0.5);\n\t\t\t\t\t\t\t\tborder-left: 10px solid rgba(131, 220, 202,0.8);;\n\t\t\t\t\t\t\t\tanimation: animate-rotate infinite linear 1s;\n\t\t\t\t\t\t\t\tmargin-right: 15px;\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tiframe {\n\t\t\t\t\t\t\t\twidth: 100vw;\n\t\t\t\t\t\t\t\theight: 100vh;\n\t\t\t\t\t\t\t\tborder: 0;\n\t\t\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t\t\t\tanimation: appear 0.5s forwards 0.4s;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t</style>\n\t\t\t\t\t</head>\n\n\t\t\t\t\t<body>\n\t\t\t\t\t\t<h3>\n\t\t\t\t\t\t\t<div class=\"loading\"></div>\n\n\t\t\t\t\t\t\tPreview Loading ...\n\t\t\t\t\t\t</h3>\n\t\t\t\t\t</body>\n\t\t\t\t</html>\n\t\t\t");
-		},
-
-		setPdfInNewTab: function setPdfInNewTab (pdfBlobUrl) {
-			// Remove Loading Label
-			this.pdfWindow.document.getElementsByTagName("h3")[0].remove();
-
-			this.pdfWindow.document.write(("\n\t\t\t\t<iframe\n\t\t\t\t\twidth='100%'\n\t\t\t\t\theight='100%'\n\t\t\t\t\tsrc='" + pdfBlobUrl + "'\n\t\t\t\t></iframe>\n\t\t\t"));
 		},
 
 		closePreview: function closePreview () {
@@ -365,11 +355,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-dfd7d954_0", { source: ".vue-html2pdf .layout-container[data-v-dfd7d954]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.vue-html2pdf .layout-container.show-layout[data-v-dfd7d954]{left:0;z-index:9999}.vue-html2pdf .pdf-preview[data-v-dfd7d954]{position:fixed;width:65%;min-width:600px;height:80vh;top:100px;z-index:9999999;left:50%;transform:translateX(-50%);border-radius:5px;box-shadow:0 0 10px #00000048}.vue-html2pdf .pdf-preview button[data-v-dfd7d954]{position:absolute;top:-20px;left:-15px;width:35px;height:35px;background:#555;border:0;box-shadow:0 0 10px #00000048;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.vue-html2pdf .pdf-preview iframe[data-v-dfd7d954]{border:0}.vue-html2pdf .transition-anim-enter-active[data-v-dfd7d954],.vue-html2pdf .transition-anim-leave-active[data-v-dfd7d954]{transition:opacity .3s ease-in}.vue-html2pdf .transition-anim-enter[data-v-dfd7d954],.vue-html2pdf .transition-anim-leave-to[data-v-dfd7d954]{opacity:0}", map: undefined, media: undefined });
+    inject("data-v-7846bb8e_0", { source: ".vue-html2pdf .layout-container[data-v-7846bb8e]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.vue-html2pdf .layout-container.show-layout[data-v-7846bb8e]{left:0;z-index:9999}.vue-html2pdf .pdf-preview[data-v-7846bb8e]{position:fixed;width:65%;min-width:600px;height:80vh;top:100px;z-index:9999999;left:50%;transform:translateX(-50%);border-radius:5px;box-shadow:0 0 10px #00000048}.vue-html2pdf .pdf-preview button[data-v-7846bb8e]{position:absolute;top:-20px;left:-15px;width:35px;height:35px;background:#555;border:0;box-shadow:0 0 10px #00000048;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.vue-html2pdf .pdf-preview iframe[data-v-7846bb8e]{border:0}.vue-html2pdf .transition-anim-enter-active[data-v-7846bb8e],.vue-html2pdf .transition-anim-leave-active[data-v-7846bb8e]{transition:opacity .3s ease-in}.vue-html2pdf .transition-anim-enter[data-v-7846bb8e],.vue-html2pdf .transition-anim-leave-to[data-v-7846bb8e]{opacity:0}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-dfd7d954";
+  var __vue_scope_id__ = "data-v-7846bb8e";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */

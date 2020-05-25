@@ -1,6 +1,6 @@
 {
   "name": "vue-html2pdf",
-  "version": "1.3.4",
+  "version": "1.3.6",
   "description": "",
   "main": "dist/vue-html2pdf.ssr.js",
   "module": "dist/vue-html2pdf.esm.js",

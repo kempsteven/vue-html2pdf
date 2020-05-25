@@ -55,6 +55,7 @@ To use it in the template
    <div>
      <vue-html2pdf
         :show-layout="false"
+        :enable-download="true"
         :preview-modal="true"
         :paginate-elements-by-height="1400"
         filename="hee hee"
@@ -83,6 +84,7 @@ This props can seen in the Usage Part
 | Props                       | Options                  | Description                                                                                                         |
 |-----------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------------|
 | show-layout                 | true, false              | Shows the pdf-content slot, using this you can see what contents will be converted to PDF.                          |
+| enable-download             | true, false              | Enabled by default. When enabled the pdf will be downloaded and vise-versa.                                         |
 | preview-modal               | true, false              | Once you generate the pdf, PDF will be previewed on a modal, PDF will not be downloaded.                            |
 | paginate-elements-by-height | Any Number               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
 | filename                    | Any String               | The number inputed will be used to paginate elements, the number will be in px units only.                          |

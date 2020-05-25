@@ -40,6 +40,11 @@ export default {
 			default: false
 		},
 
+		enableDownload: {
+			type: Boolean,
+			default: true
+		},
+
 		previewModal: {
 			type: Boolean,
 			default: false
@@ -215,13 +220,13 @@ export default {
 				}
 			}
 
-			let pdfBlobUrl
-			if (this.previewModal) {
-				pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl')
-				this.pdfFile = pdfBlobUrl
+			let pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl')
 
-			} else {
-				// Download PDF
+			if (this.previewModal) {
+				this.pdfFile = pdfBlobUrl
+			}
+
+			if (this.enableDownload) {
 				pdfBlobUrl = await html2pdf().set(opt).from(element).save().output('bloburl')
 			}
 
