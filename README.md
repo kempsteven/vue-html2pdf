@@ -100,7 +100,7 @@ This props can seen in the Usage Part
 |------------|----------------|--------------------------------|------------------------------------------------------------------------------------------------------------|
 |margin      |number or array |0                               |PDF margin (in jsPDF units). Can be a single number, `[vMargin, hMargin]`, or `[top, left, bottom, right]`. |
 |filename    |string          |'file.pdf'                      |The default filename of the exported PDF.                                                                   |
-|image       |object          |`{type: 'jpeg', quality: 0.95}` |The image type and quality used to generate the PDF. See [Image type and quality](#image-type-and-quality) below.|
+|image       |object          |`{type: 'jpeg', quality: 0.95}` |The image type and quality used to generate the PDF. See [Image type and quality](https://www.npmjs.com/package/html2pdf.js/v/0.9.0#image-type-and-quality).|
 |html2canvas |object          |`{ }`                           |Configuration options sent directly to `html2canvas` ([see here](https://html2canvas.hertzen.com/configuration) for usage).|
 |jsPDF       |object          |`{ }`                           |Configuration options sent directly to `jsPDF` ([see here](http://rawgit.com/MrRio/jsPDF/master/docs/jsPDF.html) for usage).|
 
