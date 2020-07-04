@@ -92,7 +92,53 @@ This props can seen in the Usage Part
 | pdf-format                  | a0, a1, a2, a3, a4, letter, legal, a5, a6, a7, a8, a9, a10 | This are the PDF formats (Paper Sizes)                                            |
 | pdf-orientation             | portrait, landscape      | This are the PDF orientation                                                                                        |
 | pdf-content-width           | Any css sizes (e.g. "800px", "65vw", "70%") | This is the PDF's content width                                                                  |
+| html-to-pdf-options         | [html-to-pdf-options details here](#html-to-pdf-options) | This prop gives a way to configure the whole html2pdf.js options                    |
 
+
+## html-to-pdf-options 
+|Name        |Type            |Default                         |Description                                                                                                 |
+|------------|----------------|--------------------------------|------------------------------------------------------------------------------------------------------------|
+|margin      |number or array |0                               |PDF margin (in jsPDF units). Can be a single number, `[vMargin, hMargin]`, or `[top, left, bottom, right]`. |
+|filename    |string          |'file.pdf'                      |The default filename of the exported PDF.                                                                   |
+|image       |object          |`{type: 'jpeg', quality: 0.95}` |The image type and quality used to generate the PDF. See [Image type and quality](#image-type-and-quality) below.|
+|html2canvas |object          |`{ }`                           |Configuration options sent directly to `html2canvas` ([see here](https://html2canvas.hertzen.com/configuration) for usage).|
+|jsPDF       |object          |`{ }`                           |Configuration options sent directly to `jsPDF` ([see here](http://rawgit.com/MrRio/jsPDF/master/docs/jsPDF.html) for usage).|
+
+
+#### IMPORTANT NOTE:
+If you have set a value to this prop, the props below will be overridden:
+
+`'filename'`,
+`'pdf-quality'`,
+`'pdf-format'`,
+`'pdf-orientation'`  
+
+Any value inputed to those props above will have no effect.
+
+#### Sample Value of html-to-pdf-options
+```javascript
+htmlToPdfOptions: {
+    margin: 0,
+
+    filename: `hehehe.pdf`,
+
+    image: {
+        type: 'jpeg', 
+        quality: 0.98
+    },
+
+    html2canvas: {
+        scale: 1,
+        useCORS: true
+    },
+
+    jsPDF: {
+        unit: 'in',
+        format: 'a4',
+        orientation: 'portrait'
+    }
+}
+```
 
 ## Events
 This events can seen in the Usage Part
@@ -159,8 +205,8 @@ The recommended format for the pdf-content
 ## Browser
 Package has been tested in these browsers:
 
-Chrome Version 78.0.3904.108
+Chrome Version 83.0.4103.116
 
-Mozilla Firefox Version 70.0.1
+Mozilla Firefox Version 78.0.1
 
-Microsoft Edge Version 44.17763.1.0
+Microsoft Edge Version 44.18362.449.0

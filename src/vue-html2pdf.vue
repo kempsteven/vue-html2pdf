@@ -77,6 +77,10 @@ export default {
 
 		pdfContentWidth: {
 			default: '800px'
+		},
+
+		htmlToPdfOptions: {
+			type: Object
 		}
 	},
 
@@ -117,9 +121,7 @@ export default {
 
 		generatePdf () {
 			this.$emit('hasStartedDownload')
-
 			this.progress = 0
-			
 			this.paginationOfElements()
 		},
 
@@ -187,7 +189,7 @@ export default {
 							hasWaitedForRender = true
 							resolve()
 						}
-					}, 300)
+					}, 200)
 				})
 			}
 
@@ -197,29 +199,7 @@ export default {
 		async downloadPdf () {
 			// Set Element and Html2pdf.js Options
 			const element = this.$refs.pdfContent
-			
-
-			const opt = {
-				margin: 0,
-
-				filename: `${this.filename}.pdf`,
-
-				image: {
-					type: 'jpeg', 
-					quality: 0.98
-				},
-
-				html2canvas: {
-					scale: this.pdfQuality
-				},
-
-				jsPDF: {
-					unit: 'in',
-					format: this.pdfFormat,
-					orientation: this.pdfOrientation
-				}
-			}
-
+			let opt = this.setOptions()
 			let pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl')
 
 			if (this.previewModal) {
@@ -232,10 +212,36 @@ export default {
 
 			const res = await fetch(pdfBlobUrl)
 			const blobFile = await res.blob()
-
 			this.progress = 100
-
 			this.$emit('hasGenerated', blobFile)
+		},
+
+		setOptions () {
+			if (this.htmlToPdfOptions !== undefined && this.htmlToPdfOptions !== null) {
+				return this.htmlToPdfOptions
+			}
+
+			return {
+				margin: 0,
+
+				filename: `${this.filename}.pdf`,
+
+				image: {
+					type: 'jpeg', 
+					quality: 0.98
+				},
+
+				html2canvas: {
+					scale: this.pdfQuality,
+					useCORS: true
+				},
+
+				jsPDF: {
+					unit: 'in',
+					format: this.pdfFormat,
+					orientation: this.pdfOrientation
+				}
+			}
 		},
 
 		closePreview () {
