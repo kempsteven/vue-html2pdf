@@ -19,6 +19,7 @@ vue-html2pdf converts any vue component or element into PDF, vue-html2pdf is bas
 - [Getting started](#getting-started)
   - [NPM](#npm)
 - [Usage](#usage)
+  - [Using in Nuxt.js](#using-in-nuxtjs)
 - [Props](#props)
 - [Events](#events)
 - [Slot](#slot)
@@ -78,6 +79,34 @@ To use it in the template
     </vue-html2pdf>
    </div>
 </template>
+```
+
+#### Using in Nuxtjs
+```js
+// plugins/vue-html2pdf.js
+import Vue from 'vue'
+import VueHtml2pdf from 'vue-html2pdf'
+Vue.use(VueHtml2pdf)
+```
+
+```js
+// nuxt.config.js
+plugins: [
+    { src: '@/plugins/vue-html2pdf', mode: 'client' }
+],
+```
+```html
+<!-- on-component-usage.vue -->
+<!-- you should add <client-only> tag -->
+<!-- more info for client-only tag: https://nuxtjs.org/api/components-client-only/ -->
+...
+<client-only>
+    <vue-html2pdf>
+        <section slot="pdf-content">
+        </section>
+    </vue-html2pdf>
+</client-only>
+...
 ```
 
 
