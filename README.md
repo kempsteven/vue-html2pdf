@@ -1,11 +1,14 @@
 # VueHTML2PDF Documentation
 
-Package Github: https://github.com/kempsteven/vue-html2pdf
+#### Package Github:
+https://github.com/kempsteven/vue-html2pdf
 
 Please see the demo site and demo github for easier understanding of the usage of the package.
-Demo Site: https://vue-html2pdf-demo.netlify.com/
+#### Demo Site:
+https://vue-html2pdf-demo.netlify.com/
 
-Demo Github: https://github.com/kempsteven/vue-html2pdf-demo
+#### Demo Github:
+https://github.com/kempsteven/vue-html2pdf-demo
 
 
 # vue-html2pdf
@@ -179,7 +182,7 @@ The recommended format for the pdf-content
     </section>
 
     <!--
-        All other pdf-item will could be separated in pagination process,
+        All other pdf-item will be separated in the pagination process,
         depending on paginate-elements-by-height prop.
     -->
     <section class="pdf-item">
@@ -193,8 +196,12 @@ The recommended format for the pdf-content
     </section>
 
     <!--
-        Any image with a remote link will not be converted to PDF,
-        the remote image should be downloaded locally first, before generation.
+        If you have any image with a remote source
+        set html2canvas.useCORS to true, although it is set to true by default
+        Ex.
+        html2canvas: {
+            useCORS: true
+        }
     -->
     <section class="pdf-item">
         <img :src="remoteImageLink">
