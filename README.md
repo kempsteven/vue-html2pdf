@@ -163,6 +163,8 @@ htmlToPdfOptions: {
         quality: 0.98
     },
 
+    enableLinks: false,
+
     html2canvas: {
         scale: 1,
         useCORS: true
