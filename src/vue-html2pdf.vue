@@ -51,9 +51,7 @@ export default {
 		},
 
 		paginateElementsByHeight: {
-			type: Number,
-			default: 0,
-			required: true
+			type: Number
 		},
 
 		filename: {
@@ -105,10 +103,28 @@ export default {
 
 		paginateElementsByHeight () {
 			this.resetPagination()
+		},
+
+		$props: {
+			handler () {
+				this.validateProps()
+			},
+
+			deep: true,
+			immediate: true
 		}
 	},
 
 	methods: {
+		validateProps () {
+			// If manual-pagination is false, paginate-elements-by-height props is required
+			if (!this.manualPagination) {
+				if (this.paginateElementsByHeight === undefined) {
+					console.error('Error: paginate-elements-by-height is required if manual-pagination is false')
+				}
+			}
+		},
+
 		resetPagination () {
 			const parentElement = this.$refs.pdfContent.firstChild
 			const pageBreaks = parentElement.getElementsByClassName('html2pdf__page-break')
@@ -234,6 +250,8 @@ export default {
 					type: 'jpeg', 
 					quality: 0.98
 				},
+
+				enableLinks: false,
 
 				html2canvas: {
 					scale: this.pdfQuality,
