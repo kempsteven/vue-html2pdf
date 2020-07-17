@@ -50,6 +50,11 @@ var script = {
 
 		htmlToPdfOptions: {
 			type: Object
+		},
+
+		manualPagination: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -97,6 +102,18 @@ var script = {
 		paginationOfElements: function paginationOfElements () {
 			this.progress = 25;
 
+			/*
+				When this props is true, 
+				the props paginate-elements-by-height will not be used.
+				Instead the pagination process will rely on the elements with a class "html2pdf__page-break"
+				to know where to page break, which is automatically done by html2pdf.js
+			*/
+			if (this.manualPagination) {
+				this.progress = 70;
+				this.downloadPdf();
+				return
+			}
+
 			if (!this.hasAlreadyParsed) {
 				var parentElement = this.$refs.pdfContent.firstChild;
 				var ArrOfContentChildren = Array.from(parentElement.children);
@@ -109,25 +126,32 @@ var script = {
 					that will be in the next page
 				*/
 				for (var childElement of ArrOfContentChildren) {
-					// Get Element Height
-					var elementHeight = childElement.clientHeight;
-
-					// Get Computed Margin Top and Bottom
-					var elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement);
-					var elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom);
-
-					// Add Both Element Height with the Elements Margin Top and Bottom
-					var elementHeightWithMargin = elementHeight + elementMarginTopBottom;
-
-					if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
-						childrenHeight += elementHeightWithMargin;
+					// Get The First Class of the element
+					var elementFirstClass = childElement.classList[0];
+					var isPageBreakClass = elementFirstClass === 'html2pdf__page-break';
+					if (isPageBreakClass) {
+						childrenHeight = 0;
 					} else {
-						var section = document.createElement('div');
-						section.classList.add('html2pdf__page-break');
-						parentElement.insertBefore(section, childElement);
+						// Get Element Height
+						var elementHeight = childElement.clientHeight;
 
-						// Reset Variables made the upper condition false
-						childrenHeight = elementHeightWithMargin;
+						// Get Computed Margin Top and Bottom
+						var elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement);
+						var elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom);
+
+						// Add Both Element Height with the Elements Margin Top and Bottom
+						var elementHeightWithMargin = elementHeight + elementMarginTopBottom;
+
+						if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
+							childrenHeight += elementHeightWithMargin;
+						} else {
+							var section = document.createElement('div');
+							section.classList.add('html2pdf__page-break');
+							parentElement.insertBefore(section, childElement);
+
+							// Reset Variables made the upper condition false
+							childrenHeight = elementHeightWithMargin;
+						}
 					}
 				}
 
@@ -138,30 +162,8 @@ var script = {
 					to parse the HTML to paginate the elements
 				*/
 				this.hasAlreadyParsed = true;
-			}
-
-			this.waitForHtmlRender();
-		},
-
-		waitForHtmlRender: async function waitForHtmlRender () {
-			var this$1 = this;
-
-			// Wait for Contents to Render, while also changing
-			// the progress
-			var hasWaitedForRender = false;
-
-			while (!hasWaitedForRender) {
-				await new Promise(function (resolve, reject) {
-					setTimeout(function () {
-						if (this$1.progress < 90) {
-							this$1.progress += 5;
-							resolve();
-						} else {
-							hasWaitedForRender = true;
-							resolve();
-						}
-					}, 200);
-				});
+			} else {
+				this.progress = 70;
 			}
 
 			this.downloadPdf();
@@ -361,11 +363,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-7a12a84f_0", { source: ".vue-html2pdf .layout-container[data-v-7a12a84f]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.vue-html2pdf .layout-container.show-layout[data-v-7a12a84f]{left:0;z-index:9999}.vue-html2pdf .pdf-preview[data-v-7a12a84f]{position:fixed;width:65%;min-width:600px;height:80vh;top:100px;z-index:9999999;left:50%;transform:translateX(-50%);border-radius:5px;box-shadow:0 0 10px #00000048}.vue-html2pdf .pdf-preview button[data-v-7a12a84f]{position:absolute;top:-20px;left:-15px;width:35px;height:35px;background:#555;border:0;box-shadow:0 0 10px #00000048;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.vue-html2pdf .pdf-preview iframe[data-v-7a12a84f]{border:0}.vue-html2pdf .transition-anim-enter-active[data-v-7a12a84f],.vue-html2pdf .transition-anim-leave-active[data-v-7a12a84f]{transition:opacity .3s ease-in}.vue-html2pdf .transition-anim-enter[data-v-7a12a84f],.vue-html2pdf .transition-anim-leave-to[data-v-7a12a84f]{opacity:0}", map: undefined, media: undefined });
+    inject("data-v-5107ee2e_0", { source: ".vue-html2pdf .layout-container[data-v-5107ee2e]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.vue-html2pdf .layout-container.show-layout[data-v-5107ee2e]{left:0;z-index:9999}.vue-html2pdf .pdf-preview[data-v-5107ee2e]{position:fixed;width:65%;min-width:600px;height:80vh;top:100px;z-index:9999999;left:50%;transform:translateX(-50%);border-radius:5px;box-shadow:0 0 10px #00000048}.vue-html2pdf .pdf-preview button[data-v-5107ee2e]{position:absolute;top:-20px;left:-15px;width:35px;height:35px;background:#555;border:0;box-shadow:0 0 10px #00000048;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.vue-html2pdf .pdf-preview iframe[data-v-5107ee2e]{border:0}.vue-html2pdf .transition-anim-enter-active[data-v-5107ee2e],.vue-html2pdf .transition-anim-leave-active[data-v-5107ee2e]{transition:opacity .3s ease-in}.vue-html2pdf .transition-anim-enter[data-v-5107ee2e],.vue-html2pdf .transition-anim-leave-to[data-v-5107ee2e]{opacity:0}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-7a12a84f";
+  var __vue_scope_id__ = "data-v-5107ee2e";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */

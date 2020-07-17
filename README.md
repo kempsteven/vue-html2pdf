@@ -23,6 +23,7 @@ vue-html2pdf converts any vue component or element into PDF, vue-html2pdf is bas
 - [Props](#props)
 - [Events](#events)
 - [Slot](#slot)
+- [Page Break](#page-break)
 - [Guide](#guide)
 - [Browser](#browser)
 
@@ -64,6 +65,7 @@ To use it in the template
         :paginate-elements-by-height="1400"
         filename="hee hee"
         :pdf-quality="2"
+        :manual-pagination="false"
         pdf-format="a4"
         pdf-orientation="landscape"
         pdf-content-width="800px"
@@ -119,6 +121,7 @@ This props can seen in the Usage Part
 | enable-download             | true, false              | Enabled by default. When enabled the pdf will be downloaded and vise-versa.                                         |
 | preview-modal               | true, false              | Once you generate the pdf, PDF will be previewed on a modal, PDF will not be downloaded.                            |
 | paginate-elements-by-height | Any Number               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
+| manual-pagination           | true, false              | When enabled, the package will NOT automatically paginate the elements. Instead the pagination process will rely on the elements        with a class "html2pdf__page-break" to know where to page break, which is automatically done by html2pdf.js |
 | filename                    | Any String               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
 | pdf-quality                 | 0 - 2 (Can have decimal) | 2 is the highest quality and 0.1 is the lowest quality, 0 will make the PDF disappear.                              |
 | pdf-format                  | a0, a1, a2, a3, a4, letter, legal, a5, a6, a7, a8, a9, a10 | This are the PDF formats (Paper Sizes)                                            |
@@ -190,6 +193,45 @@ This slot can seen in the Usage Part
 | pdf-content              | Use this slot to insert you component or element that will be converted to PDF                                      |
 
 
+## Page Break
+By adding an element with a class of `html2pdf__page-break` will add page break after that element.
+
+Usage:
+This can still be used with the automatic pagination of the package or
+when the prop `manual-pagination` is enabled
+
+Sample Usage:
+```html
+<section slot="pdf-content">
+
+    <section class="pdf-item">
+        <h4>
+            Title
+        </h4>
+
+        <span>
+            Value
+        </span>
+    </section>
+
+    <!--
+        After this element below, the page will break and any elements after
+        <div class="html2pdf__page-break"/> will go to the next page.
+    -->
+    <div class="html2pdf__page-break"/>
+
+    <section class="pdf-item">
+        <h4>
+            Title
+        </h4>
+
+        <span>
+            Value
+        </span>
+    </section>
+</section>
+```
+
 ## Guide
 The recommended format for the pdf-content
 
@@ -241,8 +283,8 @@ The recommended format for the pdf-content
 ## Browser
 Package has been tested in these browsers:
 
-Chrome Version 83.0.4103.116
+Chrome Version 83.0.4103.116 (Official Build) (64-bit)
 
-Mozilla Firefox Version 78.0.1
+Mozilla Firefox Version 78.0.1 (64-bit)
 
-Microsoft Edge Version 44.18362.449.0
+Microsoft Edge Version 83.0.478.64 (Official build) (64-bit)

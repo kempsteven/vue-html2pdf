@@ -81,6 +81,11 @@ export default {
 
 		htmlToPdfOptions: {
 			type: Object
+		},
+
+		manualPagination: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -128,6 +133,18 @@ export default {
 		paginationOfElements () {
 			this.progress = 25
 
+			/*
+				When this props is true, 
+				the props paginate-elements-by-height will not be used.
+				Instead the pagination process will rely on the elements with a class "html2pdf__page-break"
+				to know where to page break, which is automatically done by html2pdf.js
+			*/
+			if (this.manualPagination) {
+				this.progress = 70
+				this.downloadPdf()
+				return
+			}
+
 			if (!this.hasAlreadyParsed) {
 				const parentElement = this.$refs.pdfContent.firstChild
 				const ArrOfContentChildren = Array.from(parentElement.children)
@@ -140,25 +157,32 @@ export default {
 					that will be in the next page
 				*/
 				for (const childElement of ArrOfContentChildren) {
-					// Get Element Height
-					const elementHeight = childElement.clientHeight
-
-					// Get Computed Margin Top and Bottom
-					const elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement)
-					const elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom)
-
-					// Add Both Element Height with the Elements Margin Top and Bottom
-					const elementHeightWithMargin = elementHeight + elementMarginTopBottom
-
-					if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
-						childrenHeight += elementHeightWithMargin
+					// Get The First Class of the element
+					const elementFirstClass = childElement.classList[0]
+					const isPageBreakClass = elementFirstClass === 'html2pdf__page-break'
+					if (isPageBreakClass) {
+						childrenHeight = 0
 					} else {
-						const section = document.createElement('div')
-						section.classList.add('html2pdf__page-break')
-						parentElement.insertBefore(section, childElement)
+						// Get Element Height
+						const elementHeight = childElement.clientHeight
 
-						// Reset Variables made the upper condition false
-						childrenHeight = elementHeightWithMargin
+						// Get Computed Margin Top and Bottom
+						const elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement)
+						const elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom)
+
+						// Add Both Element Height with the Elements Margin Top and Bottom
+						const elementHeightWithMargin = elementHeight + elementMarginTopBottom
+
+						if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
+							childrenHeight += elementHeightWithMargin
+						} else {
+							const section = document.createElement('div')
+							section.classList.add('html2pdf__page-break')
+							parentElement.insertBefore(section, childElement)
+
+							// Reset Variables made the upper condition false
+							childrenHeight = elementHeightWithMargin
+						}
 					}
 				}
 
@@ -169,28 +193,8 @@ export default {
 					to parse the HTML to paginate the elements
 				*/
 				this.hasAlreadyParsed = true
-			}
-
-			this.waitForHtmlRender()
-		},
-
-		async waitForHtmlRender () {
-			// Wait for Contents to Render, while also changing
-			// the progress
-			let hasWaitedForRender = false
-
-			while (!hasWaitedForRender) {
-				await new Promise((resolve, reject) => {
-					setTimeout(() => {
-						if (this.progress < 90) {
-							this.progress += 5
-							resolve()
-						} else {
-							hasWaitedForRender = true
-							resolve()
-						}
-					}, 200)
-				})
+			} else {
+				this.progress = 70
 			}
 
 			this.downloadPdf()
