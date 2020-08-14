@@ -1,5 +1,5 @@
 {
-  "name": "vue-html2pdf",
+  "name": "vue-html2pdf-test",
   "version": "1.6.4",
   "description": "",
   "main": "dist/vue-html2pdf.ssr.js",
@@ -15,6 +15,14 @@
     "build:es": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format es",
     "build:unpkg": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife"
   },
+  "keywords": [
+    "pdf-generation",
+    "vuejs",
+    "client-side",
+    "html",
+    "canvas",
+    "html2pdf"
+  ],
   "dependencies": {
     "html2pdf.js": "^0.9.2"
   },
