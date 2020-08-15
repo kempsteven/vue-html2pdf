@@ -1,6 +1,6 @@
 {
   "name": "vue-html2pdf",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "",
   "main": "dist/vue-html2pdf.ssr.js",
   "module": "dist/vue-html2pdf.esm.js",
@@ -34,7 +34,7 @@
     "minimist": "^1.2.0",
     "rollup": "^1.31.1",
     "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-terser": "^5.2.0",
+    "rollup-plugin-terser": "^7.0.0",
     "rollup-plugin-vue": "5.1.1",
     "vue": "^2.6.11",
     "vue-template-compiler": "^2.6.11"
