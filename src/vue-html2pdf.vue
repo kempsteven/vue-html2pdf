@@ -3,7 +3,8 @@
 		<section
 			class="layout-container"
 			:class="{
-				'show-layout' : showLayout
+				'show-layout' : showLayout,
+				'unset-all' : !floatLayout
 			}"
 		>
 			<section
@@ -36,6 +37,11 @@ import html2pdf from 'html2pdf.js'
 export default {
 	props: {
 		showLayout: {
+			type: Boolean,
+			default: false
+		},
+
+		floatLayout: {
 			type: Boolean,
 			default: false
 		},
@@ -291,6 +297,12 @@ export default {
 		&.show-layout {
 			left: 0vw;
 			z-index: 9999;
+		}
+
+		&.unset-all {
+			all: unset;
+			width: auto;
+			height: auto;
 		}
 	}
 

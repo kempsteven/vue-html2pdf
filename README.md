@@ -60,6 +60,7 @@ To use it in the template
    <div>
      <vue-html2pdf
         :show-layout="false"
+        :float-layout="true"
         :enable-download="true"
         :preview-modal="true"
         :paginate-elements-by-height="1400"
@@ -118,6 +119,7 @@ This props can seen in the Usage Part
 | Props                       | Options                  | Description                                                                                                         |
 |-----------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------------|
 | show-layout                 | true, false              | Shows the pdf-content slot, using this you can see what contents will be converted to PDF.                          |
+| float-layout                | true, false              | Enabled by default. If the props is set to `false` The props `show-layout` will be overridden. The layout will not float and the layout will ALWAYS show. |
 | enable-download             | true, false              | Enabled by default. When enabled the pdf will be downloaded and vise-versa.                                         |
 | preview-modal               | true, false              | Once you generate the pdf, PDF will be previewed on a modal, PDF will not be downloaded.                            |
 | paginate-elements-by-height | Any Number               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
@@ -322,8 +324,15 @@ Copyright (c) 2020 Kemp Sayson
 ## Browser
 Package has been tested in these browsers:
 
-Chrome Version 83.0.4103.116 (Official Build) (64-bit)
+Chrome Version 85.0.4183.102 (Official Build) (64-bit)
 
-Mozilla Firefox Version 78.0.1 (64-bit)
+Mozilla Firefox Version 80.0.1 (64-bit)
 
-Microsoft Edge Version 83.0.478.64 (Official build) (64-bit)
+Microsoft Edge Version 85.0.564.51 (Official build) (64-bit)
+
+## Show your support  
+  
+Give a ⭐️ if this project helped you!
+I get motivated if I get a start.
+It's basically just like the stars we get when
+we were in preschool but for grown ups lol.
