@@ -333,6 +333,7 @@ Microsoft Edge Version 85.0.564.51 (Official build) (64-bit)
 ## Show your support  
   
 Give a ⭐️ if this project helped you!
-I get motivated if I get a start.
+I get motivated if I get a star.
+
 It's basically just like the stars we get when
 we were in preschool but for grown ups lol.
