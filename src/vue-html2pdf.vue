@@ -43,7 +43,7 @@ export default {
 
 		floatLayout: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 
 		enableDownload: {
