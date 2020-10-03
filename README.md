@@ -18,10 +18,13 @@ vue-html2pdf converts any vue component or element into PDF, vue-html2pdf is bas
 ## Table of contents
 - [Getting started](#getting-started)
   - [NPM](#npm)
+- [Migrating from 1.7.x to 1.8.x (and so on)](#migrating-from-17x-to-18x-and-so-on).
+  - [Events](#events)
 - [Usage](#usage)
   - [Using in Nuxt.js](#using-in-nuxtjs)
 - [Props](#props)
-- [Events](#events)
+- [Events](#events-1)
+  - [Sample Use Case of @beforeDownload](#sample-use-case-of-beforedownload)
 - [Slot](#slot)
 - [Page Break](#page-break)
 - [Guide](#guide)
@@ -32,6 +35,16 @@ vue-html2pdf converts any vue component or element into PDF, vue-html2pdf is bas
 
 Install vue-html2pdf and its dependencies using NPM with `npm i vue-html2pdf`
 
+## Migrating from 1.7.x to 1.8.x (and so on)
+There are a few change in version 1.7x to 1.8.x and so on.
+
+#### Events
+| 1.7.x                       | 1.8.x (and so on)        | Description                                                                                                         |
+|-----------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------------|
+| @hasStartedDownload         | @startPagination         | The event "hasStartedDownload" is now changed to "startPagination".                                                 |
+| -                           | @hasPaginated            | The event "hasPaginated" is an event triggered after pagination process is done.                                    |
+| -                           | @beforeDownload          | The event "beforeDownload" is an event triggered before the PDF generation and downloading. The event arguments contains an object `{ html2pdf, options, pdfContent }`, which can be used to have full control of html2pdf.js like e.g.(Add page count on each PDF page, Full control of jsPDF to design page, etc.), you will have to set the props `:enable-download`, `:preview-modal` to false so it will not generate the PDF.  |
+| @hasGenerated               | @hasDownloaded           | The event "hasGenerated" is now changed to "hasDownloaded".   |
 
 ## Usage
 ```js
@@ -183,19 +196,83 @@ htmlToPdfOptions: {
 ## Events
 This events can seen in the Usage Part
 
-| Events                     | Description                                                                                                            |
-|----------------------------|------------------------------------------------------------------------------------------------------------------------|
-| progress                   | This will return the progress of the PDF Generation.                                                                   |
-| hasStartedGeneration       | This only be triggered on start of the generation of the PDF.                                                          |
-| hasGenerated               | This will be triggered after the generation of the PDF, will emit a Blob File of the PDF, can be retrived using $event.|
+| Events                      | Description                                                                                                                  |
+|-----------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| @progress                   | This will return the progress of the PDF Generation. The event argument contains the progress of the PDF generation process. |
+| @startPagination            | This will be triggered on start of pagination process.                                                                       |
+| @hasPaginated               | This will be triggered after the pagination process.                                                                         |
+| @beforeDownload             | This will be triggered before the PDF generation and download. The event arguments contains an object `{ html2pdf, options, pdfContent }`, which can be used to have full control of html2pdf.js like e.g.(Add page count on each PDF page, Full control of jsPDF to design page, etc.), you will have to set the props `:enable-download`, `:preview-modal` to false so it will not generate the PDF. |
+| @hasDownloaded              | This will be triggered after downloading the PDF. The event arguments contains the Blob File of the generated PDF. This will NOT be trigerred if the props `enable-download` AND `preview-modal` is set to false. |
 
+#### Sample Use Case of @beforeDownload
+This is a sample Use case of `@beforeDownload` event.
+
+As you can see the event arguments contains a `{ html2pdf, options, pdfContent }` destructured object.
+The arguments can used to have full control of the html2pdf.js process. See the Docs [here](https://www.npmjs.com/package/html2pdf.js#usage)
+
+Below is a sample code to add a page number at the lower right on each PDF pages using the jsPDF package integrated in html2pdf.js.
+
+NOTE that you will have to set the props `enable-download` and `preview-modal` to false so it will not generate any pdf.
+You will have to handle the downloading yourself.
+
+Please refer to the html2pdf [Docs](https://www.npmjs.com/package/html2pdf.js#usage) to know the full details of the usage of html2pdf.js
+
+```html
+<vue-html2pdf
+    :show-layout="false"
+    :float-layout="true"
+    :enable-download="false"
+    :preview-modal="false"
+    filename="hehehe"
+    :paginate-elements-by-height="1100"
+    :pdf-quality="2"
+    pdf-format="a4"
+    pdf-orientation="portrait"
+    pdf-content-width="800px"
+    :manual-pagination="false"
+
+    @progress="onProgress($event)"
+    @startPagination="startPagination()"
+    @hasPaginated="hasPaginated()"
+    @beforeDownload="beforeDownload($event)"
+    @hasDownloaded="hasDownloaded($event)"
+    ref="html2Pdf"
+>
+    <pdf-content slot="pdf-content" />
+</vue-html2pdf>
+```
+
+```javascript
+<script>
+import VueHtml2pdf from 'vue-html2pdf'
+
+export default {
+    components: {
+    VueHtml2pdf
+    },
+
+    methods: {
+        async beforeDownload ({ html2pdf, options, pdfContent }) {
+            await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
+                const totalPages = pdf.internal.getNumberOfPages()
+                for (let i = 1; i <= totalPages; i++) {
+                    pdf.setPage(i)
+                    pdf.setFontSize(10)
+                    pdf.setTextColor(150)
+                    pdf.text('Page ' + i + ' of ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 0.3))
+                } 
+            }).save()
+        }
+    }
+}
+```
 
 ## Slot
 This slot can seen in the Usage Part
 
 | Slot                     | Description                                                                                                         |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------|
-| pdf-content              | Use this slot to insert you component or element that will be converted to PDF                                      |
+| pdf-content              | Use this slot to insert your component or element that will be converted to PDF                                      |
 
 
 ## Page Break
@@ -324,12 +401,13 @@ Copyright (c) 2020 Kemp Sayson
 ## Browser
 Package has been tested in these browsers:
 
-Chrome Version 85.0.4183.102 (Official Build) (64-bit)
+Chrome Version 85.0.4183.121 (Official Build) (64-bit)
 
 Mozilla Firefox Version 80.0.1 (64-bit)
 
-Microsoft Edge Version 85.0.564.51 (Official build) (64-bit)
+Microsoft Edge Version 85.0.564.63 (Official build) (64-bit)
 
+Brave Version 1.14.84 Chromium: 85.0.4183.121 (Official Build) (64-bit)
 ## Show your support  
   
 Give a ⭐️ if this project helped you!

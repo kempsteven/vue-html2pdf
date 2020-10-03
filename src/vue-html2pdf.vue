@@ -147,7 +147,7 @@ export default {
 		},
 
 		generatePdf () {
-			this.$emit('hasStartedDownload')
+			this.$emit('startPagination')
 			this.progress = 0
 			this.paginationOfElements()
 		},
@@ -163,6 +163,7 @@ export default {
 			*/
 			if (this.manualPagination) {
 				this.progress = 70
+				this.$emit('hasPaginated')
 				this.downloadPdf()
 				return
 			}
@@ -219,27 +220,36 @@ export default {
 				this.progress = 70
 			}
 
+			this.$emit('hasPaginated')
 			this.downloadPdf()
 		},
 
 		async downloadPdf () {
 			// Set Element and Html2pdf.js Options
-			const element = this.$refs.pdfContent
-			let opt = this.setOptions()
-			let pdfBlobUrl = await html2pdf().set(opt).from(element).output('bloburl')
+			const pdfContent = this.$refs.pdfContent
+			let options = this.setOptions()
+
+			this.$emit('beforeDownload', { html2pdf, options, pdfContent })
+
+			const html2PdfSetup = html2pdf().set(options).from(pdfContent)
+			let pdfBlobUrl = null
 
 			if (this.previewModal) {
-				this.pdfFile = pdfBlobUrl
+				this.pdfFile = await html2PdfSetup.output('bloburl')
+				pdfBlobUrl = this.pdfFile
 			}
 
 			if (this.enableDownload) {
-				pdfBlobUrl = await html2pdf().set(opt).from(element).save().output('bloburl')
+				pdfBlobUrl = await html2PdfSetup.save().output('bloburl')
 			}
 
-			const res = await fetch(pdfBlobUrl)
-			const blobFile = await res.blob()
+			if (pdfBlobUrl) {
+				const res = await fetch(pdfBlobUrl)
+				const blobFile = await res.blob()
+				this.$emit('hasDownloaded', blobFile)
+			}
+
 			this.progress = 100
-			this.$emit('hasGenerated', blobFile)
 		},
 
 		setOptions () {
