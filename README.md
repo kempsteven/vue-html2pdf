@@ -85,8 +85,6 @@ To use it in the template
         pdf-content-width="800px"
 
         @progress="onProgress($event)"
-        @hasStartedGeneration="hasStartedGeneration()"
-        @hasGenerated="hasGenerated($event)"
         ref="html2Pdf"
     >
         <section slot="pdf-content">
