@@ -232,6 +232,11 @@ export default {
 			this.$emit('beforeDownload', { html2pdf, options, pdfContent })
 
 			const html2PdfSetup = html2pdf().set(options).from(pdfContent)
+            console.log("🚀 ~ file: vue-html2pdf.vue ~ line 235 ~ downloadPdf ~ html2PdfSetup", html2PdfSetup)
+
+
+
+			
 			let pdfBlobUrl = null
 
 			if (this.previewModal) {
