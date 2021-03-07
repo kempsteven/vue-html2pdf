@@ -146,7 +146,7 @@ export default {
 
     generatePdf() {
       this.$emit("startPagination");
-      this.progress = 0;
+      this.progress = 3;
       this.paginationOfElements();
     },
 
@@ -248,7 +248,7 @@ export default {
           .get("pdf")
           .then(function (pdf) {
             pdf.addPage();
-            dis.$emit("progress", (i*100/childrenLength).toFixed(0));
+            dis.$emit("progress", (5+((i*100/childrenLength).toFixed(0)));
           })
           .from(page)
           .toContainer()
