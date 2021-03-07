@@ -123,8 +123,7 @@ var script = {
     },
 
     paginationOfElements: function paginationOfElements() {
-      this.progress = 25;
-
+   
       /*
 				When this props is true, 
 				the props paginate-elements-by-height will not be used.
@@ -132,7 +131,7 @@ var script = {
 				to know where to page break, which is automatically done by html2pdf.js
 			*/
       if (this.manualPagination) {
-        this.progress = 70;
+        
         this.$emit("hasPaginated");
         this.downloadPdf();
         return;
@@ -187,15 +186,13 @@ var script = {
           }
         }
 
-        this.progress = 70;
+      
 
         /*
 					Set to true so that if would generate again we wouldn't need
 					to parse the HTML to paginate the elements
 				*/
         this.hasAlreadyParsed = true;
-      } else {
-        this.progress = 70;
       }
 
       this.$emit("hasPaginated");
@@ -213,11 +210,15 @@ var script = {
       this.$emit("beforeDownload", { html2pdf: html2pdf, options: options, children: children });
 
       var html2PdfSetup = html2pdf().set(options).from(children[0]).toPdf();
-      children.slice(1).forEach(function (page) {
+
+       var childrenLength = children.length;
+      var dis =this;
+      children.slice(1).forEach(function (page, i) {
         html2PdfSetup = html2PdfSetup
           .get("pdf")
           .then(function (pdf) {
             pdf.addPage();
+            dis.$emit("progress", (i*100/childrenLength).toFixed(0));
           })
           .from(page)
           .toContainer()
@@ -408,13 +409,13 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-7f60fb87_0", { source: ".vue-html2pdf .layout-container[data-v-7f60fb87]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.vue-html2pdf .layout-container.show-layout[data-v-7f60fb87]{left:0;z-index:9999}.vue-html2pdf .layout-container.unset-all[data-v-7f60fb87]{all:unset;width:auto;height:auto}.vue-html2pdf .pdf-preview[data-v-7f60fb87]{position:fixed;width:65%;min-width:600px;height:80vh;top:100px;z-index:9999999;left:50%;transform:translateX(-50%);border-radius:5px;box-shadow:0 0 10px #00000048}.vue-html2pdf .pdf-preview button[data-v-7f60fb87]{position:absolute;top:-20px;left:-15px;width:35px;height:35px;background:#555;border:0;box-shadow:0 0 10px #00000048;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.vue-html2pdf .pdf-preview iframe[data-v-7f60fb87]{border:0}.vue-html2pdf .transition-anim-enter-active[data-v-7f60fb87],.vue-html2pdf .transition-anim-leave-active[data-v-7f60fb87]{transition:opacity .3s ease-in}.vue-html2pdf .transition-anim-enter[data-v-7f60fb87],.vue-html2pdf .transition-anim-leave-to[data-v-7f60fb87]{opacity:0}", map: undefined, media: undefined });
+    inject("data-v-0288ffc7_0", { source: ".vue-html2pdf .layout-container[data-v-0288ffc7]{position:fixed;width:100vw;height:100vh;left:-100vw;top:0;z-index:-9999;background:rgba(95,95,95,.8);display:flex;justify-content:center;align-items:flex-start;overflow:auto}.vue-html2pdf .layout-container.show-layout[data-v-0288ffc7]{left:0;z-index:9999}.vue-html2pdf .layout-container.unset-all[data-v-0288ffc7]{all:unset;width:auto;height:auto}.vue-html2pdf .pdf-preview[data-v-0288ffc7]{position:fixed;width:65%;min-width:600px;height:80vh;top:100px;z-index:9999999;left:50%;transform:translateX(-50%);border-radius:5px;box-shadow:0 0 10px #00000048}.vue-html2pdf .pdf-preview button[data-v-0288ffc7]{position:absolute;top:-20px;left:-15px;width:35px;height:35px;background:#555;border:0;box-shadow:0 0 10px #00000048;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.vue-html2pdf .pdf-preview iframe[data-v-0288ffc7]{border:0}.vue-html2pdf .transition-anim-enter-active[data-v-0288ffc7],.vue-html2pdf .transition-anim-leave-active[data-v-0288ffc7]{transition:opacity .3s ease-in}.vue-html2pdf .transition-anim-enter[data-v-0288ffc7],.vue-html2pdf .transition-anim-leave-to[data-v-0288ffc7]{opacity:0}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-7f60fb87";
+  var __vue_scope_id__ = "data-v-0288ffc7";
   /* module identifier */
-  var __vue_module_identifier__ = "data-v-7f60fb87";
+  var __vue_module_identifier__ = "data-v-0288ffc7";
   /* functional template */
   var __vue_is_functional_template__ = false;
   /* style inject shadow dom */

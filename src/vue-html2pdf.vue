@@ -151,8 +151,7 @@ export default {
     },
 
     paginationOfElements() {
-      this.progress = 25;
-
+   
       /*
 				When this props is true, 
 				the props paginate-elements-by-height will not be used.
@@ -160,7 +159,7 @@ export default {
 				to know where to page break, which is automatically done by html2pdf.js
 			*/
       if (this.manualPagination) {
-        this.progress = 70;
+        
         this.$emit("hasPaginated");
         this.downloadPdf();
         return;
@@ -215,7 +214,7 @@ export default {
           }
         }
 
-        this.progress = 70;
+      
 
         /*
 					Set to true so that if would generate again we wouldn't need
@@ -223,7 +222,7 @@ export default {
 				*/
         this.hasAlreadyParsed = true;
       } else {
-        this.progress = 70;
+      
       }
 
       this.$emit("hasPaginated");
@@ -241,11 +240,15 @@ export default {
       this.$emit("beforeDownload", { html2pdf, options, children });
 
       let html2PdfSetup = html2pdf().set(options).from(children[0]).toPdf();
-      children.slice(1).forEach(function (page) {
+
+       const childrenLength = children.length
+      const dis =this
+      children.slice(1).forEach(function (page, i) {
         html2PdfSetup = html2PdfSetup
           .get("pdf")
           .then(function (pdf) {
             pdf.addPage();
+            dis.$emit("progress", (i*100/childrenLength).toFixed(0));
           })
           .from(page)
           .toContainer()
