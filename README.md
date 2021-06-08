@@ -136,8 +136,8 @@ This props can seen in the Usage Part
 | enable-download             | true, false              | Enabled by default. When enabled the pdf will be downloaded and vise-versa.                                         |
 | preview-modal               | true, false              | Once you generate the pdf, PDF will be previewed on a modal, PDF will not be downloaded.                            |
 | paginate-elements-by-height | Any Number               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
-| manual-pagination           | true, false              | When enabled, the package will NOT automatically paginate the elements. Instead the pagination process will rely on the elements        with a class "html2pdf__page-break" to know where to page break, which is automatically done by html2pdf.js |
-| filename                    | Any String               | The number inputed will be used to paginate elements, the number will be in px units only.                          |
+| manual-pagination           | true, false              | When enabled, the package will NOT automatically paginate the elements. Instead the pagination process will rely on the elements        with a class "html2pdf__page-break" to know where to page break, which is automatically done by html2pdf.js                                                |
+| filename                    | Any String               | The file name for the PDF output.                                                                                   |
 | pdf-quality                 | 0 - 2 (Can have decimal) | 2 is the highest quality and 0.1 is the lowest quality, 0 will make the PDF disappear.                              |
 | pdf-format                  | a0, a1, a2, a3, a4, letter, legal, a5, a6, a7, a8, a9, a10 | This are the PDF formats (Paper Sizes)                                            |
 | pdf-orientation             | portrait, landscape      | This are the PDF orientation                                                                                        |
