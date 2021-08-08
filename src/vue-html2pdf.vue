@@ -36,6 +36,7 @@ import html2pdf from 'html2pdf.js'
 
 export default {
 	props: {
+        name: 'VueInvoice2Pdf',
 		showLayout: {
 			type: Boolean,
 			default: false

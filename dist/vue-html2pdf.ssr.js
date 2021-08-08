@@ -2,6 +2,7 @@
 
 var script = {
 	props: {
+        name: 'VueInvoice2Pdf',
 		showLayout: {
 			type: Boolean,
 			default: false

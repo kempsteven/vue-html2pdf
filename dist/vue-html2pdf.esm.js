@@ -3,6 +3,7 @@ import html2pdf from 'html2pdf.js';
 //
 
 var script = {
+    name: 'VueInvoice2Pdf',
 	props: {
 		showLayout: {
 			type: Boolean,
