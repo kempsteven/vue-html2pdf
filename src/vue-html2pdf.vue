@@ -9,7 +9,7 @@
 		>
 			<section
 				class="content-wrapper"
-				:style="`width: ${pdfContentWidth};`"
+				:style="`width: ${pdfContentWidth}; height: ${pdfContentHeight};`"
 				ref="pdfContent"
 			>
 				<slot name="pdf-content"/>
@@ -81,6 +81,10 @@ export default {
 
 		pdfContentWidth: {
 			default: '800px'
+		},
+		
+		pdfContentHeight: {
+			default: '1132px'
 		},
 
 		htmlToPdfOptions: {
