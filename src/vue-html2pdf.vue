@@ -226,12 +226,12 @@ export default {
 		async downloadPdf () {
 			// Set Element and Html2pdf.js Options
 			const pdfContent = this.$refs.pdfContent
-			const html2pdf = await import('html2pdf.js')
+			const html2pdf = (await import('html2pdf.js')).default
 			let options = this.setOptions()
 
-			this.$emit('beforeDownload', { html2pdf: html2pdf.default, options, pdfContent })
+			this.$emit('beforeDownload', { html2pdf, options, pdfContent })
 
-			const html2PdfSetup = html2pdf.default().set(options).from(pdfContent)
+			const html2PdfSetup = html2pdf().set(options).from(pdfContent)
 			let pdfBlobUrl = null
 
 			if (this.previewModal) {
