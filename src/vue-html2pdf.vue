@@ -32,7 +32,6 @@
     </div>
 </template>
 <script>
-import html2pdf from 'html2pdf.js'
 
 export default {
 	props: {
@@ -227,6 +226,7 @@ export default {
 		async downloadPdf () {
 			// Set Element and Html2pdf.js Options
 			const pdfContent = this.$refs.pdfContent
+			const html2pdf = (await import('html2pdf.js')).default
 			let options = this.setOptions()
 
 			this.$emit('beforeDownload', { html2pdf, options, pdfContent })
