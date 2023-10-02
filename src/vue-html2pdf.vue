@@ -60,6 +60,10 @@ export default {
 			type: Number
 		},
 
+		paddingElementAfterPaginated: {
+			type: Number
+		},
+
 		filename: {
 			type: String,
 			default: `${new Date().getTime()}`
@@ -156,7 +160,7 @@ export default {
 			this.progress = 25
 
 			/*
-				When this props is true, 
+				When this props is true,
 				the props paginate-elements-by-height will not be used.
 				Instead the pagination process will rely on the elements with a class "html2pdf__page-break"
 				to know where to page break, which is automatically done by html2pdf.js
@@ -169,7 +173,7 @@ export default {
 			}
 
 			if (!this.hasAlreadyParsed) {
-				const parentElement = this.$refs.pdfContent.firstChild
+				const parentElement = document.getElementById('pdf-parent-pagination') || this.$refs.pdfContent.firstChild
 				const ArrOfContentChildren = Array.from(parentElement.children)
 				let childrenHeight = 0
 
@@ -202,6 +206,11 @@ export default {
 							const section = document.createElement('div')
 							section.classList.add('html2pdf__page-break')
 							parentElement.insertBefore(section, childElement)
+
+							// Add padding after paginated element
+							if (this.paddingElementAfterPaginated) {
+								childElement.style.marginTop = `${this.paddingElementAfterPaginated}px`
+							}
 
 							// Reset Variables made the upper condition false
 							childrenHeight = elementHeightWithMargin
