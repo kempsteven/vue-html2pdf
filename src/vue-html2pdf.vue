@@ -183,7 +183,9 @@ export default {
 					a class named 'html2pdf__page-break' and insert the element before the element
 					that will be in the next page
 				*/
-				for (const childElement of ArrOfContentChildren) {
+
+				for (let i = 0; i < ArrOfContentChildren.length; i++){
+					const childElement = ArrOfContentChildren[i];
 					// Get The First Class of the element
 					const elementFirstClass = childElement.classList[0]
 					const isPageBreakClass = elementFirstClass === 'html2pdf__page-break'
@@ -191,16 +193,30 @@ export default {
 						childrenHeight = 0
 					} else {
 						// Get Element Height
-						const elementHeight = childElement.clientHeight
+						const elementHeight = childElement.getBoundingClientRect().height
 
 						// Get Computed Margin Top and Bottom
-						const elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement)
-						const elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom)
+						let elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement)
+						let elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom)
+
+						if (elementMarginTopBottom === 0) {
+							elementComputedStyle = childElement.getElementsByClassName('product-display')[0].currentStyle ||
+									window.getComputedStyle(childElement.getElementsByClassName('product-display')[0])
+							elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom)
+						}
 
 						// Add Both Element Height with the Elements Margin Top and Bottom
 						const elementHeightWithMargin = elementHeight + elementMarginTopBottom
 
 						if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
+							if (i === ArrOfContentChildren.length - 1) {
+
+								const diffLastHeight =  1120 - (this.paddingElementAfterPaginated * 2) - (childrenHeight + elementHeightWithMargin)
+								const section1 = document.createElement('div')
+								section1.style.height = diffLastHeight + 'px'
+								parentElement.insertAdjacentElement('beforeend', section1)
+							}
+
 							childrenHeight += elementHeightWithMargin
 						} else {
 							const section = document.createElement('div')
@@ -214,6 +230,13 @@ export default {
 
 							// Reset Variables made the upper condition false
 							childrenHeight = elementHeightWithMargin
+
+							if (i === ArrOfContentChildren.length - 1) {
+								const diffLastHeight =  1120 - (this.paddingElementAfterPaginated * 2) - (elementHeightWithMargin)
+								const section1 = document.createElement('div')
+								section1.style.height = diffLastHeight + 'px'
+								parentElement.insertAdjacentElement('beforeend', section1)
+							}
 						}
 					}
 				}
